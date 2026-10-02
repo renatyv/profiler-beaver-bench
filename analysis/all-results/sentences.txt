@@ -1,0 +1,300 @@
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5733: raw/profile: plausible, row mismatch; no HR bridge; gold’s bridge may duplicate; level2: wrong granularity
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5569: profile: wrong summary schema/field uncertain; raw: wrong table or empty result; gold: reference only
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4877: raw: wrong joins/aggregates; profile: wrong schema/filters and rank; no_links: plausible rank, incomplete rows; gold: likely flawed joins/window semantics
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1950: raw: plausible, code may mismatch; profile: wrong max; no_links: wrong dept; gold: stats omit year
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2438: profile: plausible; no_links: plausible; raw: dedup may alter stats; gold: unused join/code exclusions questionable
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4833: profile: wrong metric grain; no_links: plausible, gold indicator mismatch; raw: wrong term-level metrics; gold may confuse status/indicator
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3793: profile: wrong (sums by term); no_links: plausible (left join); raw: plausible (all years); gold: inner join omits years lacking either statistic.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3069: profile: wrong—row counts, variance not max; no_links: same; raw: wrong aggregation; gold’s subject-only join may inflate rows
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3469: profile: wrong dept field; no_links: plausible; raw: plausible; gold: ROW_NUMBER frame ignored
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4146: raw: likely wrong joins/status population; profile: wrong enrollment source and extra term joins; gold: plausible query, joins uncertain
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2960: profile: wrong; likely joins/filtering exclude subjects; profile_no_links: wrong; raw: plausible intent, but cardinality differs; gold: possible join duplication.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4775: raw: wrong detail rows; profile: wrong use-description/group; gold: detail-row scope ambiguous
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_749: profile: wrong (current-term stats); no_links: wrong (current-term only); raw: plausible, extra depts; gold: possible duplicate join to course descriptions
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3175: raw: plausible; profile: omits null DLCs; gold: groups by name, may merge distinct DLCs
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4747: profile: wrong filter/join & grouping; no_links: stats wrongly regular-only; raw: wrongly excludes N/A; gold: plausible mapping ambiguity
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4917: raw: plausible; profile: plausible, floor/org joins uncertain; no-links: wrong (0 rows); gold: key/number join suspect
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4574: profile: plausible; no-links/raw: omit unit rows; gold: questionable grouping by code instead of unit key
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5171: profile/profile_no_links: plausible; raw: plausible; gold may exclude institute by wrong field/linkage.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1792: profile: wrong stats/total aggregation; no_links: wrong scope, 76 rows; raw: plausible, but stats include all depts; gold: flawed rollup stats/course filter
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4602: raw: wrong joins/partition; profile: wrong source/partition; no_links: wrong dept; gold overfilters rows
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4506: raw/profile: wrong scope/counts; omit non-Engineering departments; no threshold in profile; gold: likely scope mismatch with question.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2206: profile: wrong code lookup; no-links/raw: wrong code; gold: overjoins subject codes for all departments
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1146: raw/profile_no_links: wrong cross join and extra course-degree filter; profile: missing; gold: school pairing ambiguous
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2801: profile: plausible, but MAX mapping may differ; raw: plausible, timed out; gold: no evident issue
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1357: profile: wrong output structure; raw: wrong room-level filter/join; no_links: missing; gold: plausible, but join may duplicate floors per sector
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1066: raw: wrong join/window fanout; profile: wrong keys/filters; no_links: wrong joins; gold: stats fanout
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5144: profile, no-links, raw: plausible; same filters/STDDEV, but omit name join; gold: redundant name/code filters.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2285: raw: plausible cross-join; profile: wrong separate rows/range; gold: join omits departments; wording ambiguous
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5505: raw: wrong grouping; profile: extra master-section filter; no_links: plausible; gold: name/code ambiguity
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2931: profile: wrong: includes NULL enrollments; others: wrong: left join; gold: category duplicates may explain rollup rows
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_312: raw: equivalent despite score; profile: extra join may alter results; no-links: wrong admin join; gold plausible
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3008: raw: plausible; profile_no_links: plausible; gold: rollup subtotal has NULL term description, unlike request
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4503: profile: wrong (doesn't filter to max); raw: plausible; gold: likely wrong window partition (no subject)
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4344: profile: missing; no-links: plausible, gold wrongly filters avg at ≥5; raw: wrong source/table, empty result
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1347: profile: wrong stats/roster; no_links: wrong student count; raw: plausible, but wrong degree source; gold: self-comparison/ambiguous.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_116: raw: wrong total (only 18); profile_no_links: wrong total; gold: total scope ambiguous
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4011: raw: wrong: filters departments, not subjects; profile: wrong: wrong degree-granting filter; no_links: wrong: omits departments; gold: plausible.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2276: profile: likely wrong source/year-term and faculty fields; raw: exclusion scope/cardinality suspect; gold: broad join may duplicate subjects and stats lack 2022 filter.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_480: raw: correct; profile: likely wrong grain/join; gold: window is irrelevant, MAX matches intent
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2715: profile: wrong cardinality; no-links: wrong cardinality; raw: wrong cardinality; gold: no clear issue
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4957: profile: plausible, but term-only stats; raw: wrong latest catalog, no term filter; gold: suspect join/cardinality
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3620: raw: likely wrong rank scope/code field; profile: wrong row loss; no_links: extra date filter, population variance; gold: DLC-key joins questionable
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_707: profile: plausible; no_links: plausible; raw: likely wrong join; gold rank always 1, avg unclear
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4038: profile: wrong aggregation/rollups; raw: wrong CIP basis and grouping; gold: plausible, joins may duplicate subjects
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3138: profile: likely wrong code/min grouping; profile_no_links: wrong, empty; raw: missing; gold: dept-only code join suspect
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3685: profile: wrong projection (code, not name); no-links: plausible, but omits organization join; raw: wrong table/group cardinality; gold: plausible, organization join may affect counts
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_974: profile: wrong filters/out-of-scope buildings; profile_no_links: omits org exclusions; raw: wrong building filter and building-specific geometric mean; gold: questionable join by building name long.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2256: raw: wrong joins/window; profile: wrong subject-description join; no-links: wrong metric; gold: row-level window ambiguity
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5140: profile: wrong joins/key and code-null field; profile_no_links: plausible but unverified joins; raw: wrong case-sensitive filter; gold: questionable window frame for ROW_NUMBER.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_868: profile: wrong variance/population; raw: wrong year filter; gold: plausible reference
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2624: raw/profile/no_links: likely wrong join; gold omits requested fields and org details.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_924: raw: likely wrong; profile: wrong code/rank key; no-links: wrong term/year, dept and rank mode; gold: no clear issue
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4636: raw: plausible; avg scope differs; profile: empty; no_links: empty; gold: suspect join/window
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_408: profile: plausible; no_links: plausible; raw: plausible; gold: reserve filter too broad
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_471: profile: wrong qualifier/total; profile_no_links: wrong grand-total grouping; raw: plausible, total unclear; gold: wrong projection/filter only qualifying departments
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1035: profile: wrong aggregation/population; raw: wrong enrollment population; gold: filters Political Science only in units CTE and Chemistry only in enrollment CTE
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2504: raw: plausible, but source/year fields uncertain; profile: wrong variance/max scope; no_links: wrong max scope; gold: wrongly joins both result sets and scopes max to 2012
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4934: profile: wrong—filters output terms; profile_no_links: same; raw: wrong filters/term fields; gold may misread scope of term restriction
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5293: raw/profile/no-links: wrong—omit MIT site filter; gold: plausible.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4746: profile: wrong—aggregates only 2022FA RQ rows; profile_no_links: same; raw: same; gold scope broader
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_791: raw: wrong joins/filters; profile: same; no-links: wrongly limits CoeffVar; gold: uses STDDEV_SAMP despite request for STDDEV
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_839: raw: stats use wrong population, omit offered flag; profile_no_links: wrong cohort; gold: joins may duplicate subjects.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4221: raw: wrong name join; profile: questionable subject-code join; no_links: plausible; gold: mapping uncertain
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_808: raw: wrong count/filters; profile: hardcoded subject join; no-links: plausible; gold: admin join may inflate count
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1316: profile: wrong joins/filters and missing columns; profile_no_links: wrong grouping/filter and extra columns; raw: wrong course-level logic, missing columns; gold likely ambiguous.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4741: raw: eligibility unclear; profile: wrong scope/counts; no_links: wrong measures; gold: term-only joins may fan out
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_819: profile: wrong, joins instead of union; no_links: plausible, count differs; raw: wrong, intersection only; gold: frame wording ambiguous
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_331: profile: wrong grouping join; no_links: likely wrong dept field; raw: extra join drops rows; gold plausible
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2294: profile: missing; profile_no_links: wrong join and per-subject counts; raw: wrong join and count scope; gold: plausible.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2733: raw: likely wrong offered/average table; profile: missing; gold: plausible reference
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5641: profile/profile_no_links: plausible; raw: conflates program with title; gold: wrong dept field.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5161: profile: plausible; raw: plausible; profile_no_links: wrong source/filters; gold: no clear issue
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_294: profile: likely wrong (street/name filters); no_links: avg includes Stata; raw: plausible; gold: key 32 exclusion unverified
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3054: profile: wrong join/empty; no_links/raw: subject-weighted overall; gold: strict cutoffs contradict “at least”
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5052: raw: wrong rows, omits org name; profile: wrong rows; no_links: wrong rows; gold plausible
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4393: profile: wrong variance/name; no-links: wrong department name; raw: wrong name; gold: window filters before frame
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2785: profile: plausible; no_links: wrong cardinality; raw: wrong join (dept code=course); gold: join ambiguity
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4461: profile: wrong filters year subjects; raw: wrong same; gold: plausible, no clear flaw
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_3587: profile: wrong—counts reserve rows, not top material statuses; no_links: wrong cross join; raw: wrong counts/statuses; gold: mapping questionable
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2187: raw: plausible; profile: plausible, dept interpretation differs; gold: omits enrolled column, join scope questionable
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1197: profile: fall-code filter dubious; no gold year intersection; no_links: same; raw: join fanout risk; gold: reserve join misses subject match
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_985: profile: wrong year source, population variance; no_links: year mapping uncertain; raw: population variance; gold: name-join risk
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_783: profile: wrong count/join and Chemistry filter; no-links: wrong count, filters; raw: wrong count/window; gold: course-material meaning ambiguous
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1591: profile: wrong school-level budgets; no_links: plausible, extra no-student depts; raw: plausible, misses 1; gold: may omit eligible departments lacking students
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2077: profile: wrong totals/phone; no-links: wrong filter; raw: wrong course filter; gold: join ambiguity
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5207: profile: missing; profile_no_links/raw: wrong extra term join; gold: plausible
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_357: profile: wrong join/grouping; no rows; raw: wrong grouping/projection; no rows; gold omits TIP 2019 filter
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_785: raw: wrong/empty; profile: wrong cardinality; no_links: wrong cardinality; gold: likely fanout; rank tie-break omitted
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5636: profile: wrong join key; no-links: wrong join key; raw: wrong table; gold: 1 row conflicts with “each year” (join uncertain)
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2036: raw: wrong course-description join; profile: wrong subject matching; no-links: cross-joins math details; gold plausible.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2050: profile: wrong stats/course-year counts; raw: plausible top years, stats scoped oddly; gold: count/join scope questionable
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_4227: raw: wrong material count; profile: wrong category/material counts; no_links: same; gold: term-only joins misattribute tips
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2896: profile: wrong (key replaces volume); no_links: extra key; raw: wrong join, extra key; gold: sound
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_9: profile/raw: wrong join key; no_links: plausible, exact-term join uncertain; gold omits TIP-2019/threshold in count
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2802: raw: likely wrong source/cardinality; profile: wrong join/partition; no_links: wrong join; gold: plausible
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_2961: profile/profile_no_links: plausible; raw: wrong join key; gold: ambiguous name-based description join.
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_595: raw: plausible, extra code; profile: min/max not range; gold: catalog vs offered mismatch
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1923: raw: plausible, fixes gold’s unweighted school avg/course-only join; profile: wrong; no_links: wrong join; gold: flawed averages/duplicate risk
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_1334: profile: wrong subject metric; profile_no_links: wrong range format; raw: wrong student count; gold: likely flawed subject-count join
+dw__main__n100_v12-openai-gpt-6-luna-low-t15/dw_5238: profile: max logic sound, returns floor key not name; no_links: same; raw: same; gold join may duplicate floors (uncertain)
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_256: profile/raw: correct per-status aggregation; gold: uncorrelated status join mislabels rows
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_152: raw: wrong per-network STDDEV/count; profile: plausible, omits action subtotal; no_links: totals differ; gold: cross-join rollups dubious
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_621: profile: plausible; no-links: COUNT(destination) risk; raw: plausible; gold: name-only grouping flaw
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_988: profile: avg includes down ports; no_links/raw: zeros skew avg; gold: extra PSB filter
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_734: raw: wrong rank/window; profile: wrong rank/window; gold: contradicts request, excludes DOWN ports and collapses VIFs.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_943: profile: plausible; no_links: binding duplicates possible; raw: plausible; gold: join may inflate port counts/window rows
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_44: profile: wrong rollup counts; profile_no_links: same; raw: wrong rollup; gold: omits zero-down groups/PSB-less ports
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_512: profile: correct correlated counts; profile_no_links: wrong DNS source; raw: DNS count may undercount multiple records. Gold: likely fanout-inflated binding count.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_14: profile: wrong rollup scope/extra rows; raw: wrong counts, duplicates totals; gold: avg includes self, not “other”
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_221: profile: sound; no_links: wrong filter; raw: plausible; gold: is_default=0 contradicts default-network request
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_925: profile, profile_no_links, raw: wrong—subnet stats/count grouped per network/action, not action across referenced networks; gold: ambiguous exclusion scope
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_593: raw: wrong max uses row value, not per-LB sum; profile: wrong filters list to ACTIVE; profile_no_links: wrong aggregates only haproxy, max unsummed; gold: plausible global status totals
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_857: profile/raw/no-links: 3-row sum, not running total; gold: flawed name join, includes non-IPv4 sums
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_228: profile: plausible; no_links: matches; raw: wrong provider source (agent config); gold: frame irrelevant to ROW_NUMBER.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_949: profile: plausible; raw: includes unbound ports; no_links: wrong DNS source; gold: flawed joins/counts
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_887: raw: plausible; profile: plausible; profile_no_links: plausible; gold: duplicated/mispartitioned rows
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_598: profile: wrong group set/count scope; profile_no_links: averages zero-DOWN groups; raw: per-SG up count; gold: cross-join inflates up total, filters groups with DOWN ports only
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_550: profile, profile_no_links, raw: correct; added ordering is harmless; gold: no issue
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_738: raw/profile/profile_no_links: wrong—omit port-security and require-binding joins; gold appears consistent.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_41: profile: wrong per-network port groups; profile_no_links/raw: wrong scope, omit portless networks; gold: port grouping ambiguous (global)
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_879: profile: plausible, but LEFT JOIN permits missing bindings; others: plausible; gold: rounds ratio to 2 decimals
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_236: profile: wrong (only max-network names); no_links: wrong (only ties); raw: plausible; gold omits names
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_311: raw: duplicate-RBAC overcounts; profiles: plausible; gold: duplicate counts, strict thresholds
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_450: profile: correct; no-links: correct; raw: correct; gold: miscomputes stats across nexthops, not subnets.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_723: raw: wrong stats; profile: wrong stats/grain; gold: max omits networks without subnets
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_688: raw: wrong binding-duplicated counts; profile: wrong admin-state filter/counts; no_links: wrong binding-duplicated counts; gold: count excludes networks lacking RBAC/bindings
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_579: profile: wrong byte total; profile_no_links: wrong threshold/total; raw: plausible, join duplication risk; gold: extra column
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_962: raw/profile/no-links: plausible; gold rank is trivially 1 and stats target-only/by next hop
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_175: raw/profile/profile-no-links: plausible; gold omits requested VIF categories and uses strict thresholds.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_97: raw/profile/no-links: wrong window population (all ports); gold’s DOWN-only scope is ambiguous
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_921: profile: plausible; stats unscoped by ID; profile_no_links: same; raw: stats unscoped; gold: window filtered before frame
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_60: profile: likely extra unbound ports; raw: wrongly filters count by attr; gold: same count-filter flaw
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_246: profile/raw: sound; profile_no_links: omits some zero-count networks; gold: excludes zeros from average
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_167: raw: wrong tenant/binding scope; profile/no_links: wrong subtotal; gold: strict thresholds conflict with “at least”
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_104: profile: wrong column order; otherwise plausible; raw: extra variance filter; gold: strict thresholds contradict “at least”
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_365: profile/raw: plausible; profile_no_links: plausible, extra network join; gold: rejoin by name/CIDR may distort counts.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_750: profile/profile_no_links: plausible; raw: missing IPv4 filter; gold: window filtered early, rank always 1
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_595: profile: plausible; no_links: plausible; raw: plausible; gold: wrongly excludes No IP ports
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_997: profile/profile_no_links/raw: plausible; score mismatch likely ordering only; gold sound
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_282: raw: plausible; profile/no_links: plausible; gold: likely double-counts via rejoin; subtotal labels omitted
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_868: profile: plausible; no_links: adds network restriction; raw: plausible; gold: global groups, extra count column
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_996: profile/profileNL: wrong window partition; raw: wrong scope; gold’s PSB join suspect (PSB = extra join)
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_850: profile/profile_no_links: plausible; raw: plausible; gold miscounts routes by next hop and pools per pool ID
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_88: profile/profile_no_links/raw: plausible; rank basis ambiguous; gold wrongly requires securitybindings, rank always 1
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_546: raw: correct; profile: correct; profile_no_links: correct; gold: consistent.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_36: profile: plausible; no_links: plausible; raw: plausible; gold: flawed—securitybindings join alters rows.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_503: raw/profile/profile_no_links: plausible; gold’s extra portsecurity join may wrongly filter ports.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_966: raw/profile/no-links: plausible; gold wrongly requires port-security binding; allocation counts may include null IPs
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_965: all: wrong metric aggregation scope; gold’s “for those statuses” is ambiguous
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_582: profile: wrong threshold population; profile_no_links: wrong shared count; raw: plausible; gold: top-3/filter order differs from wording
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_727: profile: plausible; raw: rank scoped to subnet; gold: duplicate-route rows and rank issue
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_624: profile: wrong owner set; profile_no_links: wrong details/owner set; raw: wrong owner set; gold: joins unspecified in question
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_453: profile: correct; profile_no_links: correct; raw: correct; gold: no evident issue
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_458: raw/profile: overexclude nonmatching RBAC targets; profile_no_links: same, plus zero-MTU special case; gold: tenant scope assumed.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_74: raw: plausible; no_links: plausible; profile: wrong zero-count networks; gold: stats grouping questionable
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_677: raw/profile/no-links: plausible; gold miscounts via joins and stats all ports, scope ambiguous
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_469: profile/profile_no_links/raw: correct; frame irrelevant to DENSE_RANK; gold OK.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_262: profile: wrong: interval not scalar range; no-links: wrong: population variance; raw: plausible numeric-IP interpretation; gold: likely lexical IP arithmetic ambiguity
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_994: profile: plausible; no_links: plausible; raw: missing CV; gold: window includes ineligible subnets
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_927: profile: wrong—excludes any-RBAC networks; no_links/raw: plausible; gold: shared-network test is tenant-specific.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_873: profile: wrong DNS source; profile_no_links: wrong timestamp scope/null join; raw: join may duplicate ports; gold: DNS count may undercount records
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_456: profile/profile_no_links/raw: plausible network join; gold’s shared standard_attr_id join is suspect.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_405: profile/raw: floating-IP join inflates counts; no_links: plausible; gold: NOT IN null risk
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_756: raw: wrong sets/rollup; profile: plausible sets, misses row label; no_links: wrong set; gold: questionable action scope
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_623: profile: wrong partition/count scope; raw: wrong frame averaging; gold: excludes unbound ports, strict thresholds conflict with “at least”
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_945: raw/profile/no-links: overexclude any shared grant; gold: cross-join count bug, tenant scope unclear.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_141: profile: plausible; no_links: plausible; raw: plausible; gold: may miscount via extra binding joins
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_93: profile: wrong route metric; no_links: wrong metric, extra columns; raw: wrong metric/cutoff; gold: plausible
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_242: profile: wrong rank/host order; profile_no_links: wrong join/rank/order; raw: extra column; gold: rollup adds spurious subtotals
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_101: raw: wrong VIF stats include other hosts; profile: same; profile_no_links: same; gold: host-filtered window, but unfiltered VIF count/average—ambiguous scope
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_960: all: mixed security cohort; gold filters CV only, leaving variance cohort ambiguous.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_1000: profile: plausible; profile_no_links/raw: plausible; gold: stats use inconsistent filters, inner join limits actions
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_352: profile, profile_no_links, raw: plausible/correct; gold: wrong joins unrelated ports, strict thresholds miss equality
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_861: raw/profile: omit summary status/owner; profile_no_links: sound; gold: sound
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_773: profile: plausible; no_links: plausible; raw: wrong window scope; gold: unjustified port-security join
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_164: profile: plausible per-entry stats; no_links: wrong maxima; raw: plausible per-network maxima; gold: erroneous IP_VERSION=4 filter
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_501: profile: wrong (STDDEV alone); raw/profile_no_links: plausible; gold adds HAVING/order, zero-AVG edge uncertain.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_525: profile: plausible, RBAC duplicates risk; no_links/raw: sound; gold: omits zero-subnet networks, may multiply counts
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_279: profile, profile_no_links, raw: plausible/correct; gold: averages status means, omits status column
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_652: profile: wrong rows/metrics; raw: wrong grouping/metric; gold: default flag ambiguous (0 vs 1)
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_153: profile: wrong route count/omits subnet; raw: wrong route grouping; no_links: wrong output shape; gold: questionable duplicate-name join.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_612: raw/profile/no-links: wrong window scope; gold also weights host variance by ports and uses strict thresholds
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_1: profile: plausible; no-link: plausible; raw: plausible; gold: likely subnet-count bug (updated-only); top-10 ties ambiguous
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_234: profile: plausible; no-links: plausible; raw: wrong column order; gold: unexplained portsecurity join may inflate/exclude rows
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_762: raw: plausible/correct; profile: wrong DNS source; no_links: wrong DNS field; gold: extra portsecuritybindings filter
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_394: profile: wrong extra port-binding filter; others: overexclude shared networks; gold: tenant scope ambiguous
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_432: profile: wrong—CIDR replaces range; profile_no_links: wrong aggregation; raw: wrong aggregation; gold: questionable route-count definition
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_58: profile: plausible; no_links: top-3 wrongly active-only; raw: plausible; gold: flawed active benchmark join/counts
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_157: raw: wrong baseline/filtered windows; profile: wrong population/windows; no-links: wrong baseline; gold: averages unclear/likely wrong
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_225: profile: plausible, extra avg; no_links: plausible; raw: wrong per-hop count; gold: filters to target only
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_679: raw: wrong dispersion source/scope; profile: wrong source/scope; no_links: fanout/scope; gold: omits zero-binding ports
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_747: profile: plausible, misses grand total; profile_no_links: plausible; raw: extra grand total; gold: odd shared-tenant filter, grand total unclear
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_277: raw/profile: plausible; include zero-count tenants; gold omits them and adds an unasked total column
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_661: profile/profile_no_links/raw: wrong scope; gold cross-joins SG-bound owners to each VIF type
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_975: raw: plausible; profile: plausible; no_links: pool join may skew windows; gold filters before windows
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_215: profile: plausible; no_links: plausible; raw: plausible; gold: name join may miscount duplicate names
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_554: profile/raw: plausible (default=1); gold likely inverted (uses 0)
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_98: profile: wrong rank includes offline; raw: wrong provider source; gold: ASC rank, global row-number flawed
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_989: profile: wrong—SG-scoped numerator; raw: wrong—same, plus zero-denominator groups; gold: tenant-wide numerator is ambiguous.
+neutron__main__n100_v12-openai-gpt-6-luna-low-t15/neutron_161: profile/profile_no_links/raw: plausible; gold’s security-binding join may omit or duplicate RBAC rows.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_315: raw/profile/profile_no_links: plausible; gold wrongly averages status variances for grand total and adds unexplained join.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_44: raw: wrong memory source; profile: wrong completed-only memory; no_links: wrong benchmark scope; gold: questionable memory source/cardinality
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_903: profile: wrong table/merges instances; raw: wrong grouping/filter; gold: migration filter inconsistent
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_945: raw: wrong join/count and window; profiles: migration scope differs; gold: join dubious
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_171: profile: wrong grouping/metadata; raw: wrong overall minimum; gold: questionable 16000 cutoff, cache join; likely flawed
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_963: raw: semantically right; profile: plausible; no_links: wrong host/source; gold: metadata join may omit migrations
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_104: profile/raw/no-links: semantically sound; gold wrongly requires cache for image stats
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_260: raw/profile_no_links: sound rollups, but omit gold’s subtotal/grand-total labels; profile same.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_763: raw: wrong fanout; profile: wrong cohort/overall; no-links: wrong vCPU total; gold: extra join may skew average
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_789: profile: wrong top-10 scope; profile_no_links: wrong filter order; raw: host-filtered top 10; gold rank is always 1
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_873: profile/profile_no_links/raw: plausible; gold: display-name join causes inflated rows
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1017: profile: wrong grain; no_links: wrong grain; raw: wrong grain/extra filters; gold: host variance misgrouped per name
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1016: raw/profile/profile_no_links: plausible; gold adds unspecified 2-decimal rounding.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_895: profile: plausible; no-links: wrong filter/variance; raw: wrong partition; gold: inner join may exclude rows lacking variance
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_743: profile: likely wrong deleted filter/rounding; raw: resource-stat scope; gold: unexplained deleted=0 and rounding.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_610: profile: plausible; no cache-deleted filter may differ; raw: plausible; gold: extra cache-deleted filter unclear.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_947: raw: wrong per-instance filter, ROW_NUMBER; profile: wrong per-instance filter, extra metadata deletion filter; gold: plausible display-name migration count interpretation
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_941: raw: wrong total (cached subset); profile: wrong total; no_links: wrong total; gold: cache-join duplicates possible
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_605: profile: plausible; no_links: plausible; raw: wrong memory source; gold: questionable global windows/join fanout
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_14: raw: plausible all groups; forge avg scope differs; profile: abs deviation/partitioned window wrong; no_links: forge scope wrong; gold: likely omits non-forge groups
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_240: raw: wrong—includes []; profile: wrong—min/max instead of range; no_links: correct; gold: plausible
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_60: profile: stats omit zone; raw: extra deleted filters; no-links: wrong metadata table; gold: spurious COUNT>5/multiplication
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_754: raw: wrong CV scope (cache-filtered); profile: wrong CV scope/tables; profile_no_links: plausible; gold: running, not group, average
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_179: profile: wrong split rows/rank; raw: wrong split rows, deleted filter/rank; gold: cache join may omit instances
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_750: raw: wrong rank (status constant); profile: plausible; no_links: plausible; gold: rank always 1, overjoins metadata
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_250: profile: plausible, omits deleted filter; raw: resource unclear; gold: extra column, rowwise test
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_496: raw/profile_no_links: plausible, names only; profile: uncertain tables; gold groups by name, not instance.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_633: profile: likely wrong (includes deleted totals); no_links: wrong (filters forge rows); raw: plausible quota interpretation; gold adds unrequested project_id
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_97: raw: plausible; profile: wrong, ranks flare3-only; no_links: wrong, same; gold: average scope ambiguous
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_982: profile: wrong table/top-10 instances omit count; profile_no_links: same; raw: includes zero-migration instances, omits count; gold: ambiguous display-name grouping may merge instances
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1046: raw: wrong window scope; profile: timeout, uncertain; no-links: wrong source tables/empty; gold: row-number scope questionable
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_115: all: rank by memory differs from gold; gold’s rank-by-project definition is dubious.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_985: raw: plausible; profile: wrong (ranks rolling sum); no_links: plausible, shadow table; gold rank scope questionable
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_591: raw/profile/profile_no_links: plausible; gold wrongly cache-filters output; table equivalence uncertain.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_440: raw/profile/profile_no_links: semantically correct; gold reuses a state-wide mean, not per-project means.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_541: raw: missing HAVING; profile(s): same, LIKE plausible; gold excludes singleton groups unstated.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_607: raw: plausible; profile: plausible; no_links: plausible; gold: questionable joins/subtotals; AVG>0 filter omitted
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_41: raw: wrong group/benchmark; pNL: plausible, returns 2 rows; gold: benchmark ambiguous
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_286: raw: plausible; profiles: repeated-instance sums; gold: sums per metadata row, not instance total
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_884: profile: wrong shadow tables; no_links: wrong tables; raw: extra filters; gold: unjustified instance_extra join
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_517: profile/profile_no_links/raw: plausible; gold’s unexplained join may alter results; order unspecified.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_866: profile: plausible (zone scope); raw: wrong (ranks filtered counts); gold omits zone in CV
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_986: raw: wrong global average/order; profile: wrong host-only top 10/rank scope; no_links: same; gold: cache join may inflate counts
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_528: raw/profile/profile_no_links: overfilters deleted metadata; gold: misses cache deleted=0 requirement
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_36: profile: wrong window order/extra filter; no_links: wrong eligible counts/window; raw: wrong variance/filter; gold: duplicates summaries per detail
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_469: profile/profile_no_links/raw: extra metadata-deleted filter may exclude matches; gold: cache join may alter rows; uncertain.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_157: profile: plausible; profile_no_links: uncertain metadata deletion filter; raw: wrong active flag always false; gold: top 10 before host filter may be ambiguous.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_739: profile: wrong scope (ignores required inner CTE); profile_no_links: wrong rollups/source; raw: wrong per-instance classification; gold: plausible.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_594: raw: wrong (duplicate joins); profile: plausible, duplicate joins; no-links: plausible; gold: rollup loses requested detail
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_772: profile/no-links/raw: wrong global average includes unmatched states; gold row-number partition ambiguous (key only)
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_636: raw/profile/no_links: wrong reason and metrics; gold: repeats summary metrics per VM
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_570: all: plausible; gold adds unexplained EXTRA join; column order differs only.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_458: profile: plausible but narrow active statuses; no_links: no active filter; raw: running only; gold: metadata join suspect
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_74: raw: wrong, filters stats to tagged instances; profile: plausible; no_links: plausible; gold: misses intersection/categories, separate counts only
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_689: raw: wrong global max; profile: wrong id+2; no_links: wrong global max; gold: “next 2” ambiguous
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_519: profile: correct; profile_no_links: correct; raw: correct; gold: appears sound
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_266: profile, no_links, raw: plausible; gold inner join may omit instances lacking cache rows.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_168: profile: wrong—memory avg, missing state rank/count/ratio; no_links: same; raw: wrong row-based state count; gold: average is global, not per-key
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_995: raw: window after extra join may corrupt rows; profile: likewise; no-links: likewise; gold: cache join unsupported by wording
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_472: profile: correct; raw: wrong—uses dest_host and DISTINCT, dropping rows; gold: no evident issue.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_704: raw: plausible intent, repeats summary keys; profile: joins inflate; gold omits details
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_88: raw: plausible; profile: wrong—mixes shadow tables; profile_no_links: wrong—unjustified unions; gold: drops non-completed statuses
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_562: all: plausible; gold adds unasked deleted filter; ordering differs only.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_635: profile: plausible (shadow table); no_links: plausible; raw: fanout risk; gold: extra join, filtered average, uncertain
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_225: profile: wrong max baseline/extra column; no_links: wrong baseline/extra column; raw: wrong max baseline/report; gold: unnecessary instance_extra join may skew CoV
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_413: raw/profile/profile_no_links: plausible; gold’s extra join may wrongly filter instances.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_93: profile: plausible; no_links: plausible; raw: wrongly filters deleted A; gold wrongly requires extra for variance
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_246: raw: wrong overall weighting; profile_no_links: same; profile: wrong table/weighting; gold: extra join may duplicate instances
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_101: raw: wrong top-10 grouping; profiles: rank name/AZ groups, not names; gold: name/AZ mismatch
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1009: raw/profile/profile_no_links: wrong window scope; gold also windows extra-joined rows, not instances.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_402: raw/profile/no-links: plausible; gold wrongly excludes NoCache; duplicate-cache risk.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_766: raw: plausible; profile: extra metadata filter; no_links: completed-only; gold: likely over-restricts status
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_877: raw: status-split counts; profile: plausible; no_links: thresholds per status; gold: unlinked stats and duplicate risk
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_461: raw: UUID grouping may differ; profile: wrong table; no_links: wrong memory measure
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_156: raw: extra zone filter on state stats; profile_no_links: same; profile: also wrong top-10 sort; gold may omit zone from stats.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_485: profile, profile_no_links, raw: correct; all match UUID and filter both non-deleted records.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_778: profile: wrong threshold/summary; no_links: wrong threshold/rows; raw: wrong grouping/average; gold average ambiguous
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_283: profile/profile_no_links/raw: max limited to metadata instances; gold’s INSTANCE_EXTRA join may distort counts.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_664: profile/profile_no_links: plausible; raw: wrong join; gold: flawed prefilter and protocol-specific average
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1008: profile: wrong filters all metrics; profile_no_links: wrong shared filters; raw: cache join alters GM; gold: inner-joins distinct populations
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_624: raw: plausible; left cache join; profile: wrong shadow_migrations; gold: average may be duplicate-weighted
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1: profile/profile_no_links: extra rows from LEFT cache join; raw: also adds unasked deleted filters; gold: cache join may omit instances from running sum
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_238: raw: correct; profile: correct; profile_no_links: correct; gold: sound
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_969: raw: wrong CV uses instance memory; profile(s): plausible metadata CV; gold: groups CV by display name and uses instance memory; ambiguous metadata scope
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_965: raw: plausible; profile: wrong cardinality; profile_no_links: wrong cardinality; gold: cache join may exclude/duplicate rows
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_980: profile: wrong grouping/no prime-host link; no_links: same, shadow table; raw: global sum; gold: ambiguous name join
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_58: raw: wrong stats scope; profile: wrong stats/deviation; profile_no: wrong scope; gold: cache join may omit names
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1020: profile: wrong range projection; raw: omits zero-count instances; no_links: plausible; gold: omits zero-count instances
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_360: profile: wrong grand-total state labeled SUBTOTAL; raw/no_links: plausible rollups; gold: joins may inflate counts if non-unique.
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_373: raw: wrong grand rollup; profile: also filters deleted rows; gold: rollup min sums key minima
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_165: raw: plausible; profiles: uncertain; gold: top-10, omits cache, strict cutoffs wrong
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_281: profile: plausible; extra filters/left cache join; no_links/raw: wrong LAG order; gold: sound reference
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_673: raw: wrong (sums nonpositive rows); profile: wrong (1 vs 6 states); gold: sums positives only, wording ambiguous
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_1014: profile: plausible; raw: uncertain `id` vs UUID; gold: unjustified cache join, wrong grouping/rounding reference
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_219: raw: wrong—admits `[]`; no TOTAL label; profile: wrong—rollup unlabeled; cohort stats differ; gold excludes zero-metadata instances, questionable
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_566: profile/profile_no_links: plausible; raw: extra deleted filter; gold wrongly omits zero-count instances
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_98: raw: wrong rank-before-filter; profile: wrong migration scope; no_links: plausible, extra count; gold: INSTANCE_EXTRA may duplicate counts
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_145: profile/profile_nl: wrong HAVING; raw: plausible, metadata gap; gold: omits group filters, avg scope unclear
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_161: raw: plausible, 13 vs 14 cols; profile: wrong host field; no_links: wrong host field; gold omits grand total
+nova__main__n100_v12-openai-gpt-6-luna-low-t15/nova_889: raw/profile/profile-no-links: plausible; LEFT vs gold INNER cache join uncertain; gold adds unrequested sort.

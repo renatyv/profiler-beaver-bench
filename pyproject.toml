@@ -1,0 +1,16 @@
+[project]
+name = "profiling-test"
+version = "0.2.0"
+description = "Does a pre-generated db-snooper DB profile improve agentic text-to-SQL execution accuracy on BEAVER?"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "db-snooper>=0.0.26",
+    "rich>=15.0.0",
+    "schema-linker>=0.0.3",
+]
+
+[dependency-groups]
+data = [
+    "datasets>=3.0.0",
+]

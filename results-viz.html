@@ -1,0 +1,1421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BEAVER · db-snooper profile experiment — results</title>
+<style>
+  :root {
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c232c; --ink:#e6edf3; --muted:#9aa7b4;
+    --line:#2a323c; --line2:#38434f;
+    --A:#5b8def; --A-soft:rgba(91,141,239,.18);   /* raw access                    */
+    --B:#46d39a; --B-soft:rgba(70,211,154,.18);   /* profile                       */
+    --good:#46d39a; --bad:#ff6b6b; --warn:#f0b04a;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--ink);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  a { color:var(--A); }
+  header.top {
+    position:sticky; top:0; z-index:20; background:linear-gradient(180deg,#10151b,#0e1116ee);
+    border-bottom:1px solid var(--line); padding:12px 18px; backdrop-filter:blur(8px);
+  }
+  header.top h1 { margin:0; font-size:15px; font-weight:600; }
+  header.top .sub { color:var(--muted); font-size:12px; margin-top:2px; }
+  .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
+  button, .btn {
+    appearance:none; background:var(--panel2); color:var(--ink); border:1px solid var(--line2);
+    padding:6px 11px; border-radius:8px; font-size:13px; cursor:pointer; user-select:none;
+  }
+  button:hover { border-color:#4a5664; background:#222a34; }
+  button.primary { background:var(--A); color:#08101a; border-color:transparent; font-weight:600; }
+  button.primary:hover { filter:brightness(1.08); }
+  .status { color:var(--muted); font-size:12px; margin-left:4px; }
+  .runsel { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .chip {
+    display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border-radius:999px;
+    border:1px solid var(--line2); background:var(--panel2); font-size:12px; cursor:pointer;
+  }
+  .chip.on { background:var(--A-soft); border-color:var(--A); color:#cfe0ff; }
+  .chip .dot { width:7px;height:7px;border-radius:50%; background:var(--muted); }
+  .chip.on .dot { background:var(--A); }
+  .chip.sum .dot { background:var(--warn); }
+  .chip.sum.on { background:rgba(240,176,74,.18); border-color:var(--warn); color:#ffd9a0; }
+  .chip.sum.on .dot { background:var(--warn); }
+  main { padding:18px; max-width:1500px; margin:0 auto; }
+  section.card {
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px;
+    margin-bottom:16px;
+  }
+  section.card > h2 { margin:0 0 4px; font-size:14px; letter-spacing:.02em; }
+  section.card > .hint { color:var(--muted); font-size:12px; margin:0 0 14px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { width:10px;height:10px;border-radius:2px; display:inline-block; }
+  .empty { color:var(--muted); padding:40px 0; text-align:center; }
+
+  /* Tables */
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th,td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap; }
+  th { color:var(--muted); font-weight:500; position:sticky; top:0; background:var(--panel); }
+  td.l, th.l { text-align:left; }
+  tbody tr:hover { background:#1a212a; }
+  .grp th { background:var(--panel2); color:var(--ink); font-size:11px; letter-spacing:.03em; text-transform:uppercase; }
+  .pill { display:inline-block; padding:1px 6px; border-radius:4px; font-size:11px; background:#00000040; }
+
+  /* Charts */
+  .intro { border-left:3px solid var(--B); }
+  .intro p { margin:0; color:var(--muted); max-width:1000px; }
+  .featured { margin-bottom:12px; }
+  .featured #scatterChart { max-width:900px; margin:auto; }
+  .headline-charts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+  .charts { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+  .wide { grid-column:1/-1; }
+  #subChart { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:1000px){
+    .headline-charts { grid-template-columns:1fr 1fr; }
+    .charts, #subChart { grid-template-columns:1fr; }
+  }
+  @media (max-width:680px){ .headline-charts { grid-template-columns:1fr; } }
+  .chartbox { background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 8px 4px; }
+  .chartbox h3 { margin:0 0 2px 6px; font-size:12.5px; color:var(--ink); }
+  .chartbox .hint2 { margin:0 0 4px 6px; font-size:11px; color:var(--muted); }
+  svg { display:block; width:100%; height:auto; overflow:visible; }
+  .axis text, svg text.tick { fill:var(--muted); font-size:10px; }
+  .axis line, .axis path { stroke:var(--line2); }
+  .grid line { stroke:#20262e; }
+  svg text.lbl { fill:var(--ink); font-size:11px; }
+  svg text.title { fill:var(--muted); font-size:10px; }
+  svg text.point-label { fill:var(--ink); font-size:10px; font-weight:600; paint-order:stroke; stroke:var(--panel2); stroke-width:3px; }
+
+  /* drill-down */
+  .filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px; }
+  .filters select, .filters input[type=search] {
+    background:var(--panel2); color:var(--ink); border:1px solid var(--line2); border-radius:7px;
+    padding:5px 8px; font-size:12.5px; max-width:240px;
+  }
+  .filters label { color:var(--muted); font-size:12px; display:inline-flex; gap:4px; align-items:center; }
+  .corr-yes { color:var(--good); font-weight:600; }
+  .corr-no  { color:var(--bad);  font-weight:600; }
+  .corr-na  { color:var(--muted); }
+  .wrap { overflow:auto; max-height:560px; border:1px solid var(--line); border-radius:8px; }
+  .errtag { font-size:10.5px; padding:1px 5px; border-radius:4px; background:#00000040; color:var(--muted); }
+  .errtag.correct { color:var(--good); }
+  .errtag.wrong_result, .errtag.wrong_cardinality, .errtag.wrong_column_count { color:var(--bad); }
+  .srctag { display:inline-block; font-size:10px; padding:0 5px; border-radius:4px;
+    background:#00000055; color:#ffd9a0; border:1px solid #f0b04a66; }
+
+  /* detail panel */
+  .overlay { position:fixed; inset:0; background:#0008; z-index:30; display:none; }
+  .overlay.open { display:block; }
+  .panel {
+    position:fixed; right:0; top:0; bottom:0; width:min(1200px,100vw); background:var(--panel);
+    border-left:1px solid var(--line); z-index:31; transform:translateX(100%); transition:transform .18s ease;
+    display:flex; flex-direction:column;
+  }
+  .panel.open { transform:translateX(0); }
+  .panel .ph { padding:12px 14px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .panel .ph h3 { margin:0; font-size:14px; }
+  .panel .pm { padding:12px 14px; overflow:auto; flex:1; }
+  .blk { margin-bottom:16px; }
+  .blk h4 { margin:0 0 6px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  pre.sql {
+    margin:0; background:var(--panel2); border:1px solid var(--line); border-radius:8px;
+    padding:12px; font-family:var(--mono); font-size:12px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere;
+  }
+  .twocol { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:680px){ .twocol{ grid-template-columns:1fr; } }
+  details.execs { border:1px solid var(--line); border-radius:8px; margin:6px 0; }
+  details.execs summary { padding:7px 9px; cursor:pointer; }
+  details.execs > div { padding:0 8px 8px; }
+  .turnhdr { display:flex; gap:8px; align-items:baseline; margin:10px 0 4px;
+    font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+  .turnhdr b { color:#cfe0ff; font-weight:600; }
+  .turnhdr .cnt { text-transform:none; letter-spacing:0; opacity:.8; }
+  .turnhdr.attempt, .turnhdr.attempt b { color:#ffd9a0; }
+  details.execs > div > .turnhdr:first-child { margin-top:2px; }
+  .exec { font-family:var(--mono); font-size:11.5px; line-height:1.55; background:var(--panel2); border:1px solid var(--line); border-radius:6px; padding:8px; margin:4px 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+  .miniacc { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .miniacc .ac { border:1px solid var(--line); border-radius:8px; padding:6px 10px; min-width:96px; }
+  .miniacc .ac .t { font-size:11px; color:var(--muted); }
+  .miniacc .ac .n { font-family:var(--mono); font-size:12px; }
+  .kt { display:grid; grid-template-columns:auto 1fr; gap:3px 10px; font-size:12px; }
+  .kt .k { color:var(--muted); }
+  .kt .v { font-family:var(--mono); text-align:right; }
+  .armbadge { display:inline-block; min-width:14px; white-space:nowrap; text-align:center; font-weight:700; }
+  .armbadge.A{color:var(--A)} .armbadge.B{color:var(--B)}
+  code.inl{font-family:var(--mono);background:#00000040;padding:0 4px;border-radius:4px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>BEAVER · db-snooper profile experiment</h1>
+  <div class="sub">Execution-accuracy benchmark for text-to-SQL with raw database access or a db-snooper profile.</div>
+  <div class="toolbar">
+    <input id="dirpicker" type="file" webkitdirectory directory multiple style="display:none" />
+    <button class="primary" onclick="document.getElementById('dirpicker').click()">📁 Load results folder…</button>
+    <button id="clearBtn">Clear</button>
+    <span class="status" id="status"></span>
+    <!-- Convenience: when serving the repo over HTTP (e.g. python -m http.server),
+         auto-discover and load every run under ./results. No-op without a server. -->
+    <button id="devLoadPilot" title="Auto-discover and load every run under ./results over HTTP" style="font-size:11px;opacity:.75">↻ load all runs</button>
+  </div>
+  <div class="runsel" id="runsel"></div>
+</header>
+
+<main id="main">
+  <div class="empty" id="emptyState">
+    No results loaded. Click <b>Load results folder…</b> and pick the <code class="inl">results/</code> directory
+    (or any subset of run folders). Everything is parsed locally in your browser — nothing is uploaded.
+  </div>
+
+  <div id="sections" style="display:none">
+    <section class="card intro">
+      <h2>What this benchmark measures</h2>
+      <p>Does a pre-generated <b>db-snooper</b> profile help a coding agent answer <b>BEAVER text-to-SQL</b> questions? Each setup receives the same questions; generated SQL is executed against the target database and compared by result accuracy, cost, and latency.</p>
+    </section>
+
+    <section class="card" id="chartsSec">
+      <h2>Key results</h2>
+      <p class="hint">Results for the active run. Hover SVG points for details.</p>
+      <div class="legend" id="setupLegend" style="margin-bottom:10px"></div>
+      <div class="chartbox featured"><h3>Cost vs. accuracy <span id="scatterRunTag" class="pill"></span></h3><div class="hint2">each point is one setup · upper-left is better</div><div id="scatterChart"></div></div>
+      <div class="headline-charts">
+        <div class="chartbox"><h3>Accuracy by setup <span id="accRunTag" class="pill"></span></h3><div class="hint2">execution accuracy · whiskers = 95% CI</div><div id="accChart"></div></div>
+        <div class="chartbox"><h3>Cost by setup <span id="costRunTag" class="pill"></span></h3><div class="hint2">mean cost per question · lower is better</div><div id="costChart"></div></div>
+        <div class="chartbox"><h3>Latency by setup <span id="latRunTag" class="pill"></span></h3><div class="hint2">mean seconds per question · lower is faster</div><div id="latChart"></div></div>
+      </div>
+      <div class="charts">
+        <div class="chartbox wide"><h3>Accuracy by subgroup <span id="subRunTag" class="pill"></span></h3><div class="hint2">focused run · grouped by the benchmark's subgroup fields</div><div id="subChart"></div></div>
+        <div class="chartbox wide"><h3>Pairwise Δ (accuracy)</h3><div class="hint2">setup differences · whiskers = 95% CI on Δ</div><div id="forestChart"></div></div>
+      </div>
+    </section>
+
+    <section class="card" id="auxSec">
+      <h2>Auxiliary statistics <span id="auxRunTag" class="pill"></span></h2>
+      <p class="hint">Operational totals and per-question means from <code class="inl">summary.json</code> — recomputed from pooled records when “Σ all runs” is selected.</p>
+      <div class="wrap" style="max-height:none"><table id="auxTbl"></table></div>
+    </section>
+
+    <section class="card" id="errorSec">
+      <h2>Error taxonomy</h2>
+      <p class="hint">Stacked counts from <code class="inl">summary.json → error_taxonomy</code>, per setup, per run.</p>
+      <div id="errorCharts"></div>
+    </section>
+
+    <section class="card" id="drillSec">
+      <h2>Per-question drill-down <span id="drillRunTag" class="pill"></span></h2>
+      <p class="hint">Records joined across setups by question id within the focused run — or pooled across every loaded run when “Σ all runs” is selected. Click a row to inspect SQL and the agentic trace.</p>
+      <div class="filters" id="drillFilters"></div>
+      <div class="wrap"><table id="drillTbl"></table></div>
+    </section>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<aside class="panel" id="panel">
+  <div class="ph">
+    <div>
+      <h3 id="pTitle">Question</h3>
+      <div id="pSub" style="color:var(--muted);font-size:12px;"></div>
+    </div>
+    <button onclick="closePanel()">Close ✕</button>
+  </div>
+  <div class="pm" id="panelBody"></div>
+</aside>
+
+<script type="module">
+// ───────────────────────────────────────────────────────────────────────────
+// Types (JSDoc — TS-flavoured, runs as plain JS)
+// ───────────────────────────────────────────────────────────────────────────
+
+/** @typedef {string} Arm */
+/** @typedef {{
+ *   n:number, accuracy:number, accuracy_ci95:[number,number], valid_sql_pct:number,
+ *   mean_turns:number, mean_db_queries:number, mean_latency_s:number,
+ *   tokens_input_uncached:number, tokens_cache_read:number, tokens_cache_write:number,
+ *   tokens_out:number, tokens_total:number, cost_usd:number,
+ *   by_category:Record<string,ArmStats>, by_contains_domain_knowledge:Record<string,ArmStats>,
+ *   error_taxonomy:Record<string,number>
+ * }} ArmStats */
+/** @typedef {{delta:number,ci_low:number,ci_high:number,se:number,b:number,c:number,n_discordant:number,mcnemar_chi2_cc:number,p_value_exact:number,acc_a?:number,acc_b?:number,n?:number}} Pairwise */
+/** @typedef {{id:string, arm:Arm, category?:string, contains_domain_knowledge?:boolean,
+ *   correct?:boolean|null, valid_sql?:boolean|null, error_class?:string|null,
+ *   turns?:number, db_queries?:number, latency_s?:number,
+ *   usage?:{input?:number,output?:number,cacheRead?:number,cacheWrite?:number,totalTokens?:number},
+ *   cost?:{total?:number}, pred_sql?:string, gold_sql?:string, executed_sqls?:string[],
+ *   tool_calls?:{source?:string,name?:string,arguments?:unknown,attempt?:number,turn?:number}[],
+ *   timed_out?:boolean}} QRec */
+/** @typedef {{name:string, summary?:any, arms:Record<Arm,QRec[]>}} Run */
+
+// Mirrors harness/config.py ARMS. Iteration order defines plot and legend order.
+const ARM_INFO = {
+  raw:                {badge:"A", label:"raw database access",            color:"var(--A)", desc:"agentic SQL access only"},
+  profile:            {badge:"B", label:"profile + schema links",           color:"var(--B)", desc:"agentic SQL access + profile, TOC, and schema links"},
+};
+const ARMS = Object.keys(ARM_INFO);
+const ARM_LABEL = Object.fromEntries(ARMS.map(a => [a, ARM_INFO[a].label]));
+const ARM_DESC  = Object.fromEntries(ARMS.map(a => [a, ARM_INFO[a].desc]));
+const ARM_COLOR = Object.fromEntries(ARMS.map(a => [a, ARM_INFO[a].color]));
+/** Short badge letter for an arm (for compact table cells / legends). */
+const ARM_BADGE = Object.fromEntries(ARMS.map(a => [a, ARM_INFO[a].badge]));
+
+// ───────────────────────────────────────────────────────────────────────────
+// State
+// ───────────────────────────────────────────────────────────────────────────
+/** @type {Map<string,Run>} */
+const RUNS = new Map();           // runName -> Run
+let focused = null;               // run name shown in per-run views
+/** @type {Run|null} */
+let combinedRun = null;           // synthetic pooled run built from every loaded run
+const COMBINED_NAME = "Σ all runs";
+let drillState = { run:null, sortKey:"id", sortDir:1, q:"", cat:"", dom:"", err:"", onlyMiss:false };
+
+// ───────────────────────────────────────────────────────────────────────────
+// File intake → group into runs
+// ───────────────────────────────────────────────────────────────────────────
+const dirpicker = document.getElementById("dirpicker");
+dirpicker.addEventListener("change", e => ingest(e.target.files));
+// Dev-hook intake path: WebKit makes input.files unforgeable, so programmatic
+// loads deliver their FileList through this event instead of a fake change.
+window.addEventListener("zviz:files", e => ingest(e.detail?.files));
+document.getElementById("clearBtn").onclick = () => {
+  RUNS.clear(); focused = null; combinedRun = null; renderAll();
+  setStatus("Cleared.");
+};
+
+/**
+ * Walk a FileList, bucket by directory, and assemble Run objects.
+ * A run = a directory that contains summary.json and/or a current arm JSONL.
+ */
+async function ingest(/** @type {FileList} */ files) {
+  if (!files || !files.length) return;
+  const loaded = new Set(RUNS.keys());
+  // normalize: webkitRelativePath like "results/neutron__pilot__n20/arm_<name>.jsonl"
+  const byDir = new Map(); // dirPath -> {summary?:File, arms:Map<Arm,File>}
+  for (const f of Array.from(files)) {
+    const path = f.webkitRelativePath || f.name;
+    const parts = path.split("/");
+    const name = parts[parts.length-1];
+    const dirPath = parts.slice(0,-1).join("/") || "(root)";
+    if (!byDir.has(dirPath)) byDir.set(dirPath, {arms:new Map()});
+    const slot = byDir.get(dirPath);
+    if (name === "summary.json") slot.summary = f;
+    else {
+      const m = /^arm_?(.+)\.jsonl$/i.exec(name);
+      if (m && ARMS.includes(m[1])) slot.arms.set(/** @type {Arm} */ (m[1]), f);
+    }
+  }
+
+  let newRuns = 0, newQ = 0;
+  for (const [dirPath, slot] of byDir) {
+    let summary;
+    if (slot.summary) { try { summary = JSON.parse(await slot.summary.text()); } catch(e){ console.warn("summary parse failed", dirPath, e); } }
+    if (!slot.arms.size && !ARMS.some(arm => summary?.[arm])) continue;
+    // derive run name: last path segment; fall back to full path
+    const segs = dirPath.split("/");
+    let runName = segs[segs.length-1] || dirPath || "(root)";
+    if (!runName || runName === "(root)") {
+      // try to derive from a file's stem if at root
+      runName = "root";
+    }
+    let run = RUNS.get(runName);
+    if (!run) { run = {name:runName, arms:{}}; RUNS.set(runName, run); }
+    let qAdded = 0;
+    if (summary) run.summary = summary;
+    for (const arm of ARMS) {
+      const f = slot.arms.get(arm);
+      if (!f) continue;
+      const recs = [];
+      const text = await f.text();
+      for (const line of text.split(/\r?\n/)) {
+        const t = line.trim(); if (!t) continue;
+        try { recs.push(JSON.parse(t)); } catch(e){ /* ignore bad line */ }
+      }
+      run.arms[arm] = recs; qAdded = Math.max(qAdded, recs.length);
+    }
+    if (!loaded.has(runName)) { newRuns++; newQ += qAdded; loaded.add(runName); }
+    if (!focused) focused = runName;
+  }
+  buildCombinedRun();
+  setStatus(`Loaded ${newRuns} run(s), ~${newQ} questions each. ${RUNS.size} available; showing one at a time` +
+    (combinedRun ? ` — or pick “Σ all runs” to pool them` : "") + ".");
+  renderAll();
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Helpers
+// ───────────────────────────────────────────────────────────────────────────
+const setStatus = (s) => document.getElementById("status").textContent = s;
+const fmtPct = (x, d=1) => (x==null||isNaN(x)) ? "—" : (100*x).toFixed(d)+"%";
+const fmtNum = (x, d=2) => (x==null||isNaN(x)) ? "—" : Number(x).toFixed(d);
+const fmtInt = (x) => (x==null||isNaN(x)) ? "—" : Math.round(x).toLocaleString();
+const fmtK   = (x) => (x==null||isNaN(x)) ? "—" : (x>=1000 ? (x/1000).toFixed(1)+"k" : String(Math.round(x)));
+const fmtUSD = (x) => (x==null||isNaN(x)) ? "—" : "$"+x.toFixed(x<0.01?5:4);
+const fmtSec = (x) => (x==null||isNaN(x)) ? "—" : x.toFixed(1)+"s";
+
+/** Map "neutron__pilot__n20" -> "neutron · pilot · n=20" */
+function prettyName(n) {
+  const parts = n.split("__");
+  if (parts.length >= 3) return `${parts[0]} · ${parts[1]} · n=${parts[2].replace(/^n/i,"")}`;
+  return n;
+}
+function runDb(run){ return run.name.split("__")[0]; }
+
+/** @returns {ArmStats|undefined} */
+function armSummary(/** @type {Run} */ run, /** @type {Arm} */ arm){
+  return run.summary && run.summary[arm];
+}
+
+/** Aggregate a per-question metric from JSONL records (fallback if summary missing). */
+function agg(/** @type {QRec[]} */ recs, /** @type {(r:QRec)=>number|null} */ f){
+  const xs = recs.map(f).filter(x=>x!=null && !isNaN(x));
+  if (!xs.length) return null;
+  return xs.reduce((a,b)=>a+b,0)/xs.length;
+}
+function accFromRecs(recs){
+  const judged = recs.filter(r=>r.correct===true||r.correct===false);
+  if (!judged.length) return null;
+  return judged.filter(r=>r.correct).length / judged.length;
+}
+/** Wilson 95% CI as fallback (summary provides its own CI; prefer that). */
+function wilson(k, n){
+  if (!n) return [0,0];
+  const z=1.96, p=k/n, d=1+z*z/n, c=(z*Math.sqrt(p*(1-p)/n + z*z/(4*n*n)))/d, c2=(p+z*z/(2*n))/d;
+  return [Math.max(0,c2-c), Math.min(1,c2+c)];
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Combined (pooled) run — merges every loaded run into one synthetic run.
+// Summary stats are recomputed in-browser with the same formulas as
+// harness/metrics.py so pooled numbers stay comparable with per-run summaries.
+// ───────────────────────────────────────────────────────────────────────────
+/** Mirrors harness/config.py PAIRWISE as [subtrahend, minuend]. */
+const PAIRS = [["raw","profile"]];
+const r2 = x => Math.round(x*100)/100;
+const r4 = x => Math.round(x*10000)/10000;
+const r6 = x => Math.round(x*1e6)/1e6;
+
+/** Port of metrics.aggregate(). */
+function aggregateRecords(recs){
+  const n = recs.length;
+  if (!n) return {n:0};
+  const correct = recs.filter(r=>r.correct===true).length;
+  const valid   = recs.filter(r=>r.valid_sql===true).length;
+  const ci = wilson(correct,n);
+  const opOK = recs.every(r=>r.metrics_available!==false);
+  const sum = f => recs.reduce((a,r)=>a+(Number(f(r))||0),0);
+  return {
+    n, accuracy:r4(correct/n), accuracy_ci95:[r4(ci[0]),r4(ci[1])], valid_sql_pct:r4(valid/n),
+    mean_turns: opOK ? r2(sum(r=>r.turns)/n) : null,
+    mean_db_queries: opOK ? r2(sum(r=>r.db_queries)/n) : null,
+    mean_latency_s: r2(sum(r=>r.latency_s)/n),
+    tokens_input_uncached: opOK ? Math.round(sum(r=>r.usage?.input)) : null,
+    tokens_cache_read: opOK ? Math.round(sum(r=>r.usage?.cacheRead)) : null,
+    tokens_cache_write: opOK ? Math.round(sum(r=>r.usage?.cacheWrite)) : null,
+    tokens_out: opOK ? Math.round(sum(r=>r.usage?.output)) : null,
+    tokens_total: opOK ? Math.round(sum(r=>r.usage?.totalTokens)) : null,
+    cost_usd: opOK ? r6(sum(r=>r.cost?.total)) : null,
+    operational_metrics_available: opOK,
+  };
+}
+
+/** Port of metrics.subgroup_accuracy() for one grouping key. */
+function subgroupAgg(recs, keyFn){
+  const buckets = new Map();
+  for (const r of recs){
+    const k = keyFn(r);
+    if (!buckets.has(k)) buckets.set(k,[]);
+    buckets.get(k).push(r);
+  }
+  const out = {};
+  for (const k of [...buckets.keys()].sort()) out[k] = aggregateRecords(buckets.get(k));
+  return out;
+}
+/** Python str(bool) keys, to match summary.json's by_contains_domain_knowledge. */
+const domainKey = r => r.contains_domain_knowledge===true ? "True"
+  : r.contains_domain_knowledge===false ? "False" : String(r.contains_domain_knowledge ?? "?");
+
+/** Subgroup fields summaries may segment by (BEAVER: category/domain-knowledge,
+ *  BIRD: difficulty, Spider 2.0: source database; query_shape is universal). */
+const GROUP_DEFS = [
+  {key:"category", title:"by category", label:l=>l,
+   keyFn:r=>String(r.category ?? "?"), has:r=>r.category !== undefined},
+  {key:"contains_domain_knowledge", title:"by domain-knowledge", label:l=>"domain_knowledge = "+l,
+   keyFn:domainKey, has:r=>r.contains_domain_knowledge !== undefined},
+  {key:"difficulty", title:"by difficulty", label:l=>l,
+   keyFn:r=>String(r.difficulty ?? "?"), has:r=>r.difficulty !== undefined},
+  {key:"db_id", title:"by database", label:l=>l,
+   keyFn:r=>String(r.db_id ?? "?"), has:r=>r.db_id !== undefined},
+  {key:"query_shape", title:"by query shape", label:l=>l,
+   keyFn:r=>String(r.query_shape ?? "?"), has:()=>true},
+];
+
+/** Which subgroup fields actually have data in this run (summary by_* or records). */
+function runGroups(run){
+  return GROUP_DEFS.filter(def =>
+    ARMS.some(a=>armSummary(run,a)?.["by_"+def.key]) ||
+    ARMS.some(a=>(run.arms[a]||[]).some(def.has)));
+}
+
+/** Port of metrics.mcnemar() — exact two-sided binomial p over discordant pairs. */
+function mcnemarJS(a, b){
+  let bb=0, cc=0;
+  for (let i=0;i<a.length;i++){ if (a[i]&&!b[i]) bb++; else if (!a[i]&&b[i]) cc++; }
+  const nd = bb+cc;
+  let p = 1.0;
+  if (nd){
+    const k = Math.min(bb,cc);
+    let term=1, s=1; // C(nd,0) = 1
+    for (let i=1;i<=k;i++){ term = term*(nd-i+1)/i; s += term; }
+    p = Math.min(1, 2*s*Math.pow(0.5,nd));
+  }
+  const chi2 = nd ? Math.pow(Math.abs(bb-cc)-1,2)/nd : 0;
+  return {b:bb, c:cc, n_discordant:nd, mcnemar_chi2_cc:r4(chi2), p_value_exact:r6(p)};
+}
+
+/** Port of metrics.paired_diff_ci(): a = subtrahend, b = minuend (positive Δ ⇒ minuend better). */
+function pairedDiffCI(a, b){
+  const n = a.length;
+  if (!n) return null;
+  const accA = a.filter(Boolean).length/n, accB = b.filter(Boolean).length/n;
+  const delta = accB-accA;
+  const m = mcnemarJS(a,b);
+  const se = m.n_discordant ? Math.sqrt(m.n_discordant)/n : 0;
+  return {n, acc_a:r4(accA), acc_b:r4(accB), delta:r4(delta),
+          ci_low:r4(delta-1.96*se), ci_high:r4(delta+1.96*se), se:r4(se), ...m};
+}
+
+/** Pool every loaded run into one synthetic Run. Records are tagged with `__run`. */
+function buildCombinedRun(){
+  if (RUNS.size < 2){
+    combinedRun = null;
+    if (focused===COMBINED_NAME) focused = RUNS.size ? [...RUNS.keys()][0] : null;
+    return;
+  }
+  /** @type {Run} */
+  const run = {name:COMBINED_NAME, arms:{}, summary:{}};
+  for (const arm of ARMS){
+    const recs = [];
+    for (const src of RUNS.values()) for (const r of (src.arms[arm]||[])) recs.push(Object.assign({}, r, {__run:src.name}));
+    if (!recs.length) continue;
+    run.arms[arm] = recs;
+    const s = aggregateRecords(recs);
+    for (const def of GROUP_DEFS){
+      if (recs.some(def.has)) s["by_"+def.key] = subgroupAgg(recs, def.keyFn);
+    }
+    const tax = {};
+    for (const r of recs){ const k = r.error_class ?? "?"; tax[k]=(tax[k]||0)+1; }
+    s.error_taxonomy = Object.fromEntries(Object.entries(tax).sort((x,y)=>y[1]-x[1]));
+    run.summary[arm] = s;
+  }
+  // Pairwise pooled across runs; McNemar pairs stay matched within one run.
+  const pairwise = {};
+  for (const [sub, minu] of PAIRS){
+    const a=[], b=[];
+    for (const src of RUNS.values()){
+      const subM = new Map((src.arms[sub]||[]).map(r=>[r.id, r.correct===true]));
+      const seen = new Set();
+      for (const r of (src.arms[minu]||[])){
+        if (!subM.has(r.id) || seen.has(r.id)) continue;
+        seen.add(r.id); a.push(subM.get(r.id)); b.push(r.correct===true);
+      }
+    }
+    const e = pairedDiffCI(a,b);
+    if (e) pairwise[`${minu}-${sub}`] = e;
+  }
+  if (Object.keys(pairwise).length) run.summary.pairwise = pairwise;
+  combinedRun = run;
+}
+
+/** Focused run, or the pooled synthetic run when Σ is selected. */
+function currentRun(){
+  if (focused === COMBINED_NAME) return combinedRun;
+  return focused ? (RUNS.get(focused) || null) : null;
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Top-level render
+// ───────────────────────────────────────────────────────────────────────────
+function renderAll(){
+  const any = RUNS.size>0;
+  document.getElementById("emptyState").style.display = any ? "none":"block";
+  document.getElementById("sections").style.display   = any ? "block":"none";
+  if (!any) { document.getElementById("runsel").innerHTML=""; return; }
+  renderRunSelector();
+  renderCharts();
+  renderAuxStats();
+  renderErrors();
+  drillState.run = focused;
+  renderDrill();
+}
+
+function renderRunSelector(){
+  const el = document.getElementById("runsel");
+  el.innerHTML = "";
+  const names = [...RUNS.keys()].sort();
+  if (combinedRun){
+    const totalQ = Math.max(...ARMS.map(a=>combinedRun.arms[a]?.length||0));
+    const div = document.createElement("div");
+    div.className = "chip sum" + (focused===COMBINED_NAME?" on":"");
+    div.innerHTML = `<span class="dot"></span>Σ all runs <span style="opacity:.6">(${totalQ})</span>`;
+    div.title = "pool every loaded run into one combined view";
+    div.onclick = () => { focused = COMBINED_NAME; renderAll(); };
+    el.appendChild(div);
+  }
+  for (const n of names) {
+    const run = RUNS.get(n);
+    const totalQ = Math.max(...ARMS.map(a=>run.arms[a]?.length||0));
+    const div = document.createElement("div");
+    div.className = "chip " + (focused===n?"on":"");
+    const isFocused = (focused===n);
+    div.innerHTML = `<span class="dot"></span>${prettyName(n)}` +
+      (isFocused ? ` <span style="opacity:.7">★</span>` : "") +
+      ` <span style="opacity:.6">(${totalQ})</span>`;
+    div.title = `${n}\n· click to show this run`;
+    div.onclick = () => { focused = n; renderAll(); };
+    el.appendChild(div);
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Charts (hand-rolled SVG)
+// ───────────────────────────────────────────────────────────────────────────
+const SVGNS = "http://www.w3.org/2000/svg";
+/** @returns {SVGGElement} */
+function svgEl(tag, attrs={}, parent){
+  const e = document.createElementNS(SVGNS, tag);
+  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function makeSvg(w, h){
+  const s = svgEl("svg",{viewBox:`0 0 ${w} ${h}`, width:w, height:h});
+  return s;
+}
+
+function renderCharts(){
+  document.getElementById("setupLegend").innerHTML = ARMS.map(arm =>
+    `<span><i style="background:${ARM_COLOR[arm]}"></i><b>${ARM_BADGE[arm]}</b> ${ARM_LABEL[arm]}</span>`
+  ).join("");
+  renderAccChart();
+  renderCostChart();
+  renderLatencyChart();
+  renderSubChart();
+  renderScatter();
+  renderForest();
+}
+
+function renderAccChart(){
+  const run = currentRun();
+  const data = run && ARMS.map(arm=>{
+    const s = armSummary(run,arm); const recs = run.arms[arm]||[];
+    let acc,ci;
+    if (s){ acc=s.accuracy; ci=s.accuracy_ci95; }
+    else { const j=recs.filter(r=>r.correct===true||r.correct===false); acc=j.length?j.filter(r=>r.correct).length/j.length:0; ci=wilson(j.filter(r=>r.correct).length,j.length); }
+    return {arm,value:acc,ci:ci||[acc,acc]};
+  });
+  renderArmBars("accChart","accRunTag",run,data,{max:1,ticks:[0,.25,.5,.75,1],fmt:fmtPct});
+}
+
+function renderCostChart(){
+  const run = currentRun();
+  const data = run && ARMS.map(arm=>{
+    const s=armSummary(run,arm);
+    return {arm,value:s?.cost_usd != null && s.n ? s.cost_usd/s.n : agg(run.arms[arm]||[],r=>r.cost?.total)};
+  });
+  renderArmBars("costChart","costRunTag",run,data,{fmt:fmtUSD});
+}
+
+function renderLatencyChart(){
+  const run = currentRun();
+  const data = run && ARMS.map(arm=>({arm,value:armSummary(run,arm)?.mean_latency_s ?? agg(run.arms[arm]||[],r=>r.latency_s)}));
+  renderArmBars("latChart","latRunTag",run,data,{fmt:fmtSec});
+}
+
+function renderArmBars(hostId, tagId, run, data, opts){
+  const host = document.getElementById(hostId), tag = document.getElementById(tagId);
+  host.innerHTML="";
+  if (!run){ tag.textContent=""; host.innerHTML=`<div class="empty">Select a run.</div>`; return; }
+  tag.textContent = prettyName(run.name);
+  const W=360,H=210, m={t:24,r:14,b:30,l:54};
+  const values = data.map(d=>d.value).filter(v=>v!=null && !isNaN(v));
+  const yMax = opts.max || Math.max(...values,1e-9)*1.18;
+  const ticks = opts.ticks || [0,yMax/2,yMax];
+  const y = v => H-m.b-(v/yMax)*(H-m.t-m.b);
+  const svg=makeSvg(W,H), g=svgEl("g",{},svg);
+  for (const v of ticks){
+    const yy=y(v);
+    svgEl("line",{x1:m.l,x2:W-m.r,y1:yy,y2:yy,stroke:"#20262e"},g);
+    svgEl("text",{x:m.l-6,y:yy+3,"text-anchor":"end",class:"tick"},g).textContent=opts.fmt(v);
+  }
+  const slot=(W-m.l-m.r)/ARMS.length;
+  data.forEach((d,i)=>{
+    if (d.value==null) return;
+    const cx=m.l+slot*(i+.5), x=m.l+slot*(i+.22), width=slot*.56;
+    const bar=svgEl("rect",{x,y:y(d.value),width,height:H-m.b-y(d.value),fill:ARM_COLOR[d.arm]||"var(--muted)",rx:3},g);
+    svgEl("title",{},bar).textContent=`${ARM_LABEL[d.arm]} · ${opts.fmt(d.value)}`;
+    if (d.ci){
+      const y0=y(d.ci[0]), y1=y(d.ci[1]);
+      svgEl("line",{x1:cx,x2:cx,y1:y0,y2:y1,stroke:"#0e1116","stroke-width":2},g);
+      for (const yy of [y0,y1]) svgEl("line",{x1:cx-6,x2:cx+6,y1:yy,y2:yy,stroke:"#0e1116","stroke-width":2},g);
+    }
+    svgEl("text",{x:cx,y:Math.max(13,y(d.value)-5),"text-anchor":"middle",class:"lbl"},g).textContent=opts.fmt(d.value);
+    const label=svgEl("text",{x:cx,y:H-m.b+17,"text-anchor":"middle",class:"lbl"},g); label.textContent=ARM_BADGE[d.arm];
+    svgEl("title",{},label).textContent=ARM_LABEL[d.arm];
+  });
+  host.appendChild(svg);
+}
+
+/** Grouped bars: accuracy per subgroup field present in the focused run. */
+function renderSubChart(){
+  const host = document.getElementById("subChart");
+  const tag = document.getElementById("subRunTag");
+  host.innerHTML="";
+  const run = currentRun();
+  if (!run){ tag.textContent=""; host.innerHTML=`<div class="empty">Select a run.</div>`; return; }
+  tag.textContent = prettyName(run.name);
+
+  const defs = runGroups(run);
+  if (!defs.length){ host.innerHTML=`<div class="empty">No subgroup fields in this run.</div>`; return; }
+  for (const def of defs) host.appendChild(subgroupSvg(run, def));
+}
+
+function subgroupSvg(run, def){
+  // compute per-arm accuracy per group from summary if present, else JSONL
+  const summaryKey = "by_"+def.key;
+  const labels = new Set();
+  let anySummary = false;
+  for (const arm of ARMS){
+    const s = armSummary(run,arm)?.[summaryKey];
+    if (s){ anySummary = true; Object.keys(s).forEach(k=>labels.add(k)); }
+  }
+  if (!anySummary){
+    for (const arm of ARMS) (run.arms[arm]||[]).forEach(r=>{
+      const k = def.keyFn(r);
+      if (k !== "?") labels.add(k);
+    });
+  }
+  const labelList = def.key === "contains_domain_knowledge"
+    ? ["True","False"].filter(k=>labels.has(k))
+    : [...labels].sort();
+  /** @type {{label:string, byArm:Record<Arm,{acc:number,ci:[number,number],n:number}>}[]} */
+  const groups = labelList.map(l=>{
+    const byArm = /** @type {Record<Arm,{acc:number,ci:[number,number],n:number}>} */ ({});
+    for (const arm of ARMS){
+      const s = armSummary(run,arm)?.[summaryKey]?.[l];
+      const recs = (run.arms[arm]||[]).filter(r=>def.keyFn(r)===l);
+      if (s){ byArm[arm] = {acc:s.accuracy, ci:s.accuracy_ci95, n:s.n}; }
+      else { const j=recs.filter(r=>r.correct===true||r.correct===false); const k=j.filter(r=>r.correct).length; byArm[arm]={acc:j.length?k/j.length:0,ci:wilson(k,j.length),n:j.length}; }
+    }
+    return {label:def.label(l), byArm};
+  }).filter(g => ARMS.some(a=>g.byArm[a]?.n>0));
+
+  const nG = groups.length;
+  // tall layout for a handful of groups, compact rows when a field is wide
+  // (e.g. Spider 2.0's ~30 databases)
+  const compact = nG > 12;
+  const groupH = compact ? 44 : 92;
+  const W=660, m={t:28,r:92,b:20,l:190};
+  const H = m.t + nG*groupH + m.b;
+  const svg = makeSvg(W,H);
+  const g0 = svgEl("g",{},svg);
+  svgEl("text",{x:8,y:14,class:"title"},g0).textContent = def.title;
+
+  const innerW = W - m.l - m.r;
+  for (const v of [0,.5,1]){
+    const xx=m.l+v*innerW;
+    svgEl("line",{x1:xx,x2:xx,y1:m.t-8,y2:H-m.b,stroke:"#20262e"},g0);
+    svgEl("text",{x:xx,y:m.t-11,"text-anchor":"middle",class:"tick"},g0).textContent=(v*100)+"%";
+  }
+  groups.forEach((grp,gi)=>{
+    const top=m.t+gi*groupH, label=grp.label.length>27?grp.label.slice(0,26)+"…":grp.label;
+    const labelEl=svgEl("text",{x:8,y:top+(compact?9:13),class:"lbl"},g0); labelEl.textContent=label;
+    svgEl("title",{},labelEl).textContent=grp.label;
+    ARMS.forEach((arm,ai)=>{
+      const d = grp.byArm[arm];
+      const y=top+(compact?12:24)+ai*(compact?11:20);
+      const armLabel=svgEl("text",{x:m.l-10,y:y+(compact?7:9),"text-anchor":"end",class:"lbl"},g0); armLabel.textContent=ARM_BADGE[arm];
+      svgEl("title",{},armLabel).textContent=ARM_LABEL[arm];
+      if (!d || !d.n){ svgEl("text",{x:m.l+5,y:y+9,class:"tick"},g0).textContent="—"; return; }
+      svgEl("rect",{x:m.l,y,width:d.acc*innerW,height:compact?8:12,fill:ARM_COLOR[arm]||"var(--muted)",rx:2},g0);
+      svgEl("line",{x1:m.l+d.ci[0]*innerW,x2:m.l+d.ci[1]*innerW,y1:y+(compact?10:15),y2:y+(compact?10:15),stroke:ARM_COLOR[arm]||"var(--muted)","stroke-width":2},g0);
+      svgEl("text",{x:W-m.r+7,y:y+10,class:"tick"},g0).textContent=`${fmtPct(d.acc)} · n=${d.n}`;
+    });
+  });
+  return svg;
+}
+
+/** Scatter: cost vs accuracy for the active run. */
+function renderScatter(){
+  const host = document.getElementById("scatterChart");
+  const tag = document.getElementById("scatterRunTag");
+  host.innerHTML="";
+  const run = currentRun();
+  const runs = run ? [run] : [];
+  if (!run){ tag.textContent=""; host.innerHTML=`<div class="empty">Select a run.</div>`; return; }
+  tag.textContent = prettyName(run.name);
+
+  const pts = [];
+  for (const run of runs){
+    for (const arm of ARMS){
+      const s = armSummary(run,arm);
+      const recs = run.arms[arm]||[];
+      let acc=null, cost=null;
+      if (s){ acc=s.accuracy; cost=s.cost_usd != null && s.n ? s.cost_usd/s.n : null; }
+      else { acc=accFromRecs(recs); cost=agg(recs,r=>r.cost?.total); }
+      if (acc==null||cost==null||!recs.length) continue;
+      pts.push({run:run.name, arm, acc, cost});
+    }
+  }
+  if (!pts.length){ host.innerHTML=`<div class="empty">No plottable points.</div>`; return; }
+
+  const W=380,H=250, m={t:16,r:14,b:50,l:52};
+  const svg = makeSvg(W,H); const g=svgEl("g",{},svg);
+  const xMax = Math.max(...pts.map(p=>p.cost))*1.12 || 1;
+  const yMax = 1.05;
+  const X = v=> m.l + (v/xMax)*(W-m.l-m.r);
+  const Y = v=> H - m.b - (v/yMax)*(H-m.t-m.b);
+
+  svgEl("text",{x:(W)/2,y:13,class:"title","text-anchor":"middle"},g).textContent="cost / question (USD) →";
+  svgEl("text",{x:12,y:H/2,class:"title",transform:`rotate(-90 12 ${H/2})`,"text-anchor":"middle"},g).textContent="accuracy →";
+  // grid
+  for (const v of [0,.25,.5,.75,1]){
+    const yy=Y(v); svgEl("line",{x1:m.l,x2:W-m.r,y1:yy,y2:yy},g).setAttribute("stroke","#20262e");
+    svgEl("text",{x:m.l-6,y:yy+3,"text-anchor":"end",class:"tick"},g).textContent=(v*100)+"%";
+  }
+  const xticks = 4;
+  for (let i=0;i<=xticks;i++){
+    const v = (xMax/xticks)*i; const xx=X(v);
+    svgEl("text",{x:xx,y:H-m.b+20,"text-anchor":"middle",class:"tick"},g).textContent = "$"+(v).toFixed(v<0.01?5:4);
+  }
+  svgEl("line",{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b},g).setAttribute("stroke","var(--line2)");
+  svgEl("line",{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b},g).setAttribute("stroke","var(--line2)");
+
+  for (const p of pts){
+    const px=X(p.cost), py=Y(p.acc), right=px>W-m.r-90, offset=ARMS.indexOf(p.arm);
+    const c = svgEl("circle",{cx:px,cy:py,r:6,fill:ARM_COLOR[p.arm]||"var(--muted)",opacity:.9,stroke:"#0e1116","stroke-width":1},g);
+    const title = svgEl("title",{},g); title.textContent = `${prettyName(p.run)} · ${ARM_LABEL[p.arm]}\nacc ${fmtPct(p.acc)} · cost ${fmtUSD(p.cost)}/q`;
+    c.appendChild(title);
+    svgEl("text",{x:px+(right?-8:8),y:py+(py>H/2?-12-offset*12:14+offset*12),"text-anchor":right?"end":"start",class:"point-label"},g).textContent=ARM_BADGE[p.arm];
+  }
+  host.appendChild(svg);
+}
+
+function renderAuxStats(){
+  const host=document.getElementById("auxTbl"), tag=document.getElementById("auxRunTag");
+  const run=currentRun();
+  if (!run){ tag.textContent=""; host.innerHTML=""; return; }
+  tag.textContent=prettyName(run.name);
+  const rows=ARMS.map(arm=>({arm,s:armSummary(run,arm),tools:agg(run.arms[arm]||[],r=>r.tool_calls?.length)})).filter(r=>r.s);
+  if (!rows.length){ host.innerHTML=`<tbody><tr><td class="l empty">No summary statistics available.</td></tr></tbody>`; return; }
+  host.innerHTML=`<thead><tr>
+    <th class="l">Setup</th><th>Questions</th><th>Valid SQL</th><th>Mean turns</th><th>Mean DB queries</th><th>Mean tool calls</th>
+    <th>Mean latency</th><th>Input tokens (uncached)</th><th>Cache read</th><th>Cache write</th><th>Output tokens</th><th>Total tokens</th><th>Total cost</th><th>Cost / question</th>
+  </tr></thead><tbody>${rows.map(({arm,s,tools})=>`<tr>
+    <td class="l"><span class="armbadge ${ARM_BADGE[arm]}" title="${ARM_LABEL[arm]}">${ARM_BADGE[arm]}</span> ${ARM_LABEL[arm]}</td>
+    <td>${fmtInt(s.n)}</td><td>${fmtPct(s.valid_sql_pct)}</td><td>${fmtNum(s.mean_turns)}</td><td>${fmtNum(s.mean_db_queries)}</td><td>${fmtNum(tools)}</td>
+    <td>${fmtSec(s.mean_latency_s)}</td><td>${fmtInt(s.tokens_input_uncached)}</td><td>${fmtInt(s.tokens_cache_read)}</td><td>${fmtInt(s.tokens_cache_write)}</td><td>${fmtInt(s.tokens_out)}</td><td>${fmtInt(s.tokens_total)}</td>
+    <td>${fmtUSD(s.cost_usd)}</td><td>${fmtUSD(s.cost_usd != null && s.n ? s.cost_usd/s.n : null)}</td>
+  </tr>`).join("")}</tbody>`;
+}
+
+/** Forest plot: pairwise accuracy differences for the active run. */
+function renderForest(){
+  const host = document.getElementById("forestChart");
+  host.innerHTML="";
+  const run = currentRun();
+  const runs = run ? [run] : [];
+  if (!run){ host.innerHTML=`<div class="empty">Select a run.</div>`; return; }
+
+  // Pair keys are derived from config.PAIRWISE on the Python side as
+  // "{minuend}-{subtrahend}". Render one row per key present in summary.pairwise.
+  const pw = run.summary?.pairwise || {};
+  /** @type {{label:string, detail:string, delta:number, lo:number, hi:number, p:number, nd:number, color:string}[]} */
+  const rows = [];
+  for (const [key, e] of Object.entries(pw)) {
+    if (!e || typeof e.delta !== "number") continue;
+    // key = "<minuend>-<subtrahend>"; split on the first "-" that separates two arm names.
+    // Arm names themselves contain "_" but not "-", so this split is unambiguous.
+    const dash = key.indexOf("-");
+    const minu = dash > 0 ? key.slice(0, dash) : key;
+    const sub = dash > 0 ? key.slice(dash + 1) : "";
+    rows.push({
+      label: `${ARM_BADGE[minu] || minu} − ${ARM_BADGE[sub] || sub}`,
+      detail: `${ARM_LABEL[minu] || minu} − ${ARM_LABEL[sub] || sub}`,
+      delta: e.delta, lo: e.ci_low, hi: e.ci_high,
+      p: e.p_value_exact, nd: e.n_discordant,
+      color: ARM_COLOR[minu] || "var(--B)",
+    });
+  }
+  rows.sort((a,b) => b.delta - a.delta);
+  if (!rows.length){ host.innerHTML=`<div class="empty">No pairwise data in summaries.</div>`; return; }
+
+  const W=600, rowH=26, m={t:20,r:120,b:30,l:340};
+  const H = m.t + rows.length*rowH + m.b;
+  const svg=makeSvg(W,H); const g=svgEl("g",{},svg);
+  // x domain: symmetric around 0
+  const span = Math.max(0.1, ...rows.map(r=>Math.max(Math.abs(r.lo),Math.abs(r.hi))));
+  const xMin=-span*1.15, xMax=span*1.15;
+  const X = v=> m.l + (v-xMin)/(xMax-xMin)*(W-m.l-m.r);
+
+  // grid + ticks
+  const niceTicks = niceTicksAround0(xMin,xMax);
+  for (const v of niceTicks){
+    const xx=X(v);
+    svgEl("line",{x1:xx,x2:xx,y1:m.t,y2:H-m.b},g).setAttribute("stroke", v===0?"#404a57":"#20262e");
+    svgEl("text",{x:xx,y:H-m.b+14,"text-anchor":"middle",class:"tick"},g).textContent = (v>0?"+":"")+(v*100).toFixed(0)+"%";
+  }
+  svgEl("text",{x:m.l+(W-m.l-m.r)/2,y:12,class:"title","text-anchor":"middle"},g).textContent="Δ accuracy (95% CI)";
+
+  rows.forEach((r,i)=>{
+    const y=m.t+i*rowH+rowH/2;
+    svgEl("text",{x:m.l-8,y:y+3,"text-anchor":"end",class:"lbl"},g).textContent = r.label;
+    const x0=X(Math.max(r.lo,xMin)), x1=X(Math.min(r.hi,xMax));
+    svgEl("line",{x1:x0,x2:x1,y1:y,y2:y,"stroke-width":2},g).setAttribute("stroke",r.color);
+    svgEl("line",{x1:x0,x2:x0,y1:y-5,y2:y+5,"stroke-width":2},g).setAttribute("stroke",r.color);
+    svgEl("line",{x1:x1,x2:x1,y1:y-5,y2:y+5,"stroke-width":2},g).setAttribute("stroke",r.color);
+    const dot = svgEl("circle",{cx:X(r.delta),cy:y,r:4,fill:r.color},g);
+    const t = svgEl("title",{},g); t.textContent = `${r.detail}\nΔ ${fmtPct(r.delta)} [${fmtPct(r.lo)}, ${fmtPct(r.hi)}]\nMcNemar exact p=${fmtNum(r.p,3)} · ${r.nd} discordant`;
+    dot.appendChild(t);
+    // right-side annotation
+    svgEl("text",{x:W-m.r+6,y:y+3,class:"tick"},g).textContent = `${(r.delta>0?"+":"")+(r.delta*100).toFixed(1)}%  p=${fmtNum(r.p,2)}`;
+  });
+  host.appendChild(svg);
+}
+function niceTicksAround0(xMin,xMax){
+  const edge = Math.max(0.05, Math.floor(xMax*20)/20);
+  return [-edge,0,edge];
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Error taxonomy stacked bars
+// ───────────────────────────────────────────────────────────────────────────
+const ERR_ORDER = [
+  "correct", "missing_join", "extra_join", "wrong_join_type", "missing_group_by",
+  "wrong_aggregate", "missing_order_by", "missing_limit", "wrong_cardinality",
+  "wrong_result", "empty_result", "syntax", "wrong_table_or_column", "not_runnable", "timeout",
+];
+const ERR_COLOR = {
+  correct:"#46d39a", missing_join:"#e56b6f", extra_join:"#d47bba", wrong_join_type:"#b080e8",
+  missing_group_by:"#f6c85f", wrong_aggregate:"#ff9f43", missing_order_by:"#4dabf7", missing_limit:"#74c0fc",
+  wrong_cardinality:"#f0b04a", wrong_result:"#ff6b6b", empty_result:"#667788", syntax:"#8aa0b4",
+  wrong_table_or_column:"#c062e5", not_runnable:"#5a6672", timeout:"#ffd166",
+};
+function errColor(k){ return ERR_COLOR[k] || "#5a6672"; }
+
+function renderErrors(){
+  const host = document.getElementById("errorCharts");
+  host.innerHTML="";
+  const run = currentRun();
+  const runs = run ? [run] : [];
+  if (!run){ host.innerHTML=`<div class="empty">Select a run.</div>`; return; }
+
+  // legend
+  const keysUsed = new Set();
+  for (const run of runs) for (const arm of ARMS){
+    const tax = armSummary(run,arm)?.error_taxonomy;
+    if (tax) Object.keys(tax).forEach(k=>keysUsed.add(k));
+  }
+  const orderedKeys = ERR_ORDER.filter(k=>keysUsed.has(k)).concat([...keysUsed].filter(k=>!ERR_ORDER.includes(k)));
+  const legend = document.createElement("div"); legend.className="legend"; legend.style.marginBottom="10px";
+  for (const k of orderedKeys) legend.innerHTML += `<span><i style="background:${errColor(k)}"></i>${k}</span>`;
+  host.appendChild(legend);
+
+  for (const run of runs){
+    const row = document.createElement("div");
+    row.style.marginBottom="10px";
+    const title = document.createElement("div");
+    title.style.color="var(--muted)"; title.style.fontSize="12px"; title.style.marginBottom="4px";
+    title.textContent = prettyName(run.name);
+    row.appendChild(title);
+    for (const arm of ARMS){
+      const tax = armSummary(run,arm)?.error_taxonomy;
+      const recs = run.arms[arm]||[];
+      // fallback: tally error_class from JSONL
+      const tally = tax ? {...tax} : {};
+      if (!tax){ for (const r of recs){ const k = r.error_class ?? "?"; tally[k]=(tally[k]||0)+1; } }
+      const total = Object.values(tally).reduce((a,b)=>a+b,0) || 1;
+      const wrap = document.createElement("div");
+      wrap.style.display="flex"; wrap.style.alignItems="center"; wrap.style.gap="8px"; wrap.style.marginBottom="5px";
+      wrap.innerHTML = `<span class="armbadge ${ARM_BADGE[arm]||""}" title="${ARM_LABEL[arm]}" style="width:92px;text-align:left">${ARM_BADGE[arm]}</span>`;
+      const bar = document.createElement("div");
+      bar.style.display="flex"; bar.style.flex="1"; bar.style.height="20px"; bar.style.borderRadius="5px"; bar.style.overflow="hidden"; bar.style.border="1px solid var(--line)";
+      let segs="";
+      for (const k of orderedKeys){
+        const v = tally[k]||0; if(!v) continue;
+        const w = (v/total)*100;
+        segs += `<div title="${k}: ${v}" style="width:${w}%;background:${errColor(k)};"></div>`;
+      }
+      bar.innerHTML = segs || `<div style="flex:1;background:#2a323c"></div>`;
+      wrap.appendChild(bar);
+      const cnt = document.createElement("span");
+      cnt.style.color="var(--muted)"; cnt.style.fontSize="11px"; cnt.style.minWidth="44px"; cnt.style.textAlign="right";
+      cnt.textContent = `n=${total}`;
+      wrap.appendChild(cnt);
+      row.appendChild(wrap);
+    }
+    host.appendChild(row);
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Per-question drill-down
+// ───────────────────────────────────────────────────────────────────────────
+function recordErrors(r){
+  if (!r) return [];
+  const errors = new Set(r.error_class ? [r.error_class] : []);
+  if (r.gold_rows != null && r.pred_rows != null && r.gold_rows !== r.pred_rows)
+    errors.add("wrong_cardinality");
+  if (r.gold_columns != null && r.pred_columns != null && r.gold_columns !== r.pred_columns)
+    errors.add("wrong_column_count");
+  return [...errors];
+}
+
+function renderDrill(){
+  const tag = document.getElementById("drillRunTag");
+  const fHost = document.getElementById("drillFilters");
+  const host = document.getElementById("drillTbl");
+  const run = currentRun();
+  if (!run){ tag.textContent=""; host.innerHTML=""; fHost.innerHTML=""; return; }
+  tag.textContent = prettyName(run.name);
+
+  // join records by id across arms; in the combined view key by run::id so
+  // identical question ids from different runs stay separate rows
+  const isComb = run === combinedRun;
+  /** @type {Map<string,Record<Arm,QRec>>} */
+  const byId = new Map();
+  for (const arm of ARMS){
+    for (const r of (run.arms[arm]||[])){
+      const key = isComb ? `${r.__run}::${r.id}` : r.id;
+      if (!byId.has(key)) byId.set(key, {});
+      byId.get(key)[arm] = r;
+    }
+  }
+  let rows = [...byId.entries()].map(([key,arms])=>{
+    const anyRec = ARMS.map(arm=>arms[arm]).find(Boolean);
+    const metric = key => Object.fromEntries(ARMS.map(arm=>[arm, arms[arm]?.[key]]));
+    return {
+      id: anyRec?.id || key, key, run: anyRec?.__run, arms,
+      category: anyRec?.category || "",
+      domain: anyRec?.contains_domain_knowledge,
+      correct: metric("correct"), err: Object.fromEntries(ARMS.map(arm=>[arm, recordErrors(arms[arm])])),
+      turns: metric("turns"), dbq: metric("db_queries"), lat: metric("latency_s"),
+      tools: Object.fromEntries(ARMS.map(arm=>[arm, arms[arm]?.tool_calls?.length])),
+    };
+  });
+
+  // filters UI (rebuild lightly; keep current values)
+  const st = drillState;
+  const cats = [...new Set(rows.map(r=>r.category).filter(Boolean))].sort();
+  const errs = [...new Set([].concat(...rows.map(r=>ARMS.flatMap(a=>r.err[a]))))].sort();
+  fHost.innerHTML = `
+    <input type="search" placeholder="filter by id…" value="${escapeHtml(st.q)}" id="fQ">
+    <label>category <select id="fCat">
+      <option value="">all</option>${cats.map(c=>`<option ${c===st.cat?"selected":""}>${escapeHtml(c)}</option>`).join("")}
+    </select></label>
+    <label>domain <select id="fDom">
+      <option value="">all</option>
+      <option value="true" ${st.dom==="true"?"selected":""}>true</option>
+      <option value="false" ${st.dom==="false"?"selected":""}>false</option>
+    </select></label>
+    <label>error <select id="fErr">
+      <option value="">all</option>${errs.map(e=>`<option ${e===st.err?"selected":""}>${escapeHtml(e)}</option>`).join("")}
+    </select></label>
+    <label><input type="checkbox" id="fMiss" ${st.onlyMiss?"checked":""}> only disagreements/misses</label>
+    <span style="color:var(--muted);font-size:12px" id="rowCount"></span>
+  `;
+  document.getElementById("fQ").oninput  = e=>{ st.q=e.target.value; paintRows(); };
+  document.getElementById("fCat").onchange = e=>{ st.cat=e.target.value; paintRows(); };
+  document.getElementById("fDom").onchange = e=>{ st.dom=e.target.value; paintRows(); };
+  document.getElementById("fErr").onchange = e=>{ st.err=e.target.value; paintRows(); };
+  document.getElementById("fMiss").onchange = e=>{ st.onlyMiss=e.target.checked; paintRows(); };
+
+  function applyFilters(){
+    return rows.filter(r=>{
+      if (st.q && !r.id.toLowerCase().includes(st.q.toLowerCase())) return false;
+      if (st.cat && r.category!==st.cat) return false;
+      if (st.dom==="true" && !r.domain) return false;
+      if (st.dom==="false" && r.domain) return false;
+      if (st.err && !ARMS.some(a=>r.err[a].includes(st.err))) return false;
+      if (st.onlyMiss){
+        // any arm incorrect while another correct (disagreement) OR not all correct
+        const vals = ARMS.map(a=>r.correct[a]);
+        const hasFalse = vals.some(v=>v===false);
+        if (!hasFalse) return false;
+      }
+      return true;
+    });
+  }
+
+  function paintRows(){
+    let data = applyFilters();
+    // sort
+    const k = st.sortKey, dir = st.sortDir;
+    const cmp = (a,b)=>{
+      let va, vb;
+      if (k==="id"||k==="category"||k==="run"){ va=a[k]||""; vb=b[k]||""; return va<vb?-dir:va>vb?dir:0; }
+      if (k==="domain"){ va=a.domain?1:0; vb=b.domain?1:0; return (va-vb)*dir; }
+      const arm = ARMS.find(arm=>k.endsWith("_"+arm));
+      if (arm){ const field=k.slice(0,-arm.length-1); va=a[field][arm]; vb=b[field][arm]; if (field==="err"){ va=va.join(", "); vb=vb.join(", "); } }
+      va = (va==null)?(dir>0?Infinity:-Infinity):va;
+      vb = (vb==null)?(dir>0?Infinity:-Infinity):vb;
+      return typeof va==="string" || typeof vb==="string"
+        ? String(va).localeCompare(String(vb))*dir : (Number(va)-Number(vb))*dir;
+    };
+    data.sort(cmp);
+    document.getElementById("rowCount").textContent = `${data.length} / ${rows.length} questions`;
+
+    // header
+    const th = (k,label,cls="",attrs="") => `<th class="${cls}" ${attrs} onclick="window.__sort('${k}')" style="cursor:pointer">${label}${st.sortKey===k?(st.sortDir>0?" ▲":" ▼"):""}</th>`;
+    const setupHeads = (metric) => ARMS.map(arm=>th(`${metric}_${arm}`,`<span class="armbadge ${ARM_BADGE[arm]||""}" title="${ARM_LABEL[arm]}">${ARM_BADGE[arm]}</span>`)).join("");
+    let html = `<thead><tr class="grp">
+      ${isComb ? th("run","run","l",`rowspan="2"`) : ""}
+      ${th("id","question id","l",`rowspan="2"`)}
+      ${th("category","category","l",`rowspan="2"`)}
+      ${th("domain","domain knowledge","",`rowspan="2"`)}
+      <th colspan="${ARMS.length}" style="text-align:center">Correct</th>
+      <th colspan="${ARMS.length}" style="text-align:center">Error</th>
+      <th colspan="${ARMS.length}" style="text-align:center">Turns</th>
+      <th colspan="${ARMS.length}" style="text-align:center">DB queries</th>
+      <th colspan="${ARMS.length}" style="text-align:center">Tool calls</th>
+    </tr><tr>
+      ${setupHeads("correct")}${setupHeads("err")}${setupHeads("turns")}${setupHeads("dbq")}${setupHeads("tools")}
+    </tr></thead><tbody>`;
+    for (const r of data){
+      const cell = (/** @type {boolean|null|undefined} */ v)=> v===true?`<span class="corr-yes">✓</span>`:v===false?`<span class="corr-no">✗</span>`:`<span class="corr-na">–</span>`;
+      const errc = (errors)=> errors.length ? errors.map(e=>`<span class="errtag ${escapeAttr(e)}">${escapeHtml(e.replaceAll("_", " "))}</span>`).join("<br>") : `<span class="corr-na">–</span>`;
+      const num  = (v)=> v==null?`<span class="corr-na">–</span>`:v;
+      html += `<tr style="cursor:pointer" onclick="window.__open('${escapeAttr(r.key)}')">
+        ${isComb ? `<td class="l" title="${escapeHtml(r.run)}">${escapeHtml(prettyName(r.run))}</td>` : ""}
+        <td class="l"><code class="inl">${escapeHtml(r.id)}</code></td>
+        <td class="l">${escapeHtml(r.category)}</td>
+        <td>${r.domain===true?"✓":r.domain===false?"—":"?"}</td>
+        ${ARMS.map(arm=>`<td>${cell(r.correct[arm])}</td>`).join("")}
+        ${ARMS.map(arm=>`<td>${errc(r.err[arm])}</td>`).join("")}
+        ${ARMS.map(arm=>`<td>${num(r.turns[arm])}</td>`).join("")}
+        ${ARMS.map(arm=>`<td>${num(r.dbq[arm])}</td>`).join("")}
+        ${ARMS.map(arm=>`<td>${num(r.tools[arm])}</td>`).join("")}
+      </tr>`;
+    }
+    host.innerHTML = html + "</tbody>";
+  }
+  paintRows();
+}
+window.__sort = (k)=>{ if (drillState.sortKey===k) drillState.sortDir=-drillState.sortDir; else { drillState.sortKey=k; drillState.sortDir=1; } renderDrill(); };
+window.__open = (id)=> openPanel(id);
+
+function escapeHtml(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(s){ return String(s??"").replace(/['"\\]/g,"\\$&"); }
+function formatSql(sql){
+  const quoted = /('(?:''|[^'])*'|"(?:""|[^"])*"|`(?:``|[^`])*`)/g;
+  const lines = String(sql??"").split(quoted).map((part,i)=>i%2 ? part : part
+    .replace(/\s+/g," ")
+    .replace(/\s*\b((?:LEFT|RIGHT|FULL)(?: OUTER)? JOIN|(?:INNER|CROSS) JOIN|JOIN|UNION(?: ALL)?|GROUP BY|ORDER BY|PARTITION BY|SELECT|FROM|WHERE|HAVING|LIMIT|WITH)\b\s*/gi,"\n$1 ")
+    .replace(/\s*\b(AND|OR|WHEN|ELSE|END)\b\s*/gi,"\n  $1 "))
+    .join("").trim().split("\n");
+  let depth = 0;
+  return lines.map(line=>{
+    const text = line.trim();
+    const bare = text.replace(quoted,"");
+    const leadingClose = bare.match(/^\)+/)?.[0].length || 0;
+    depth = Math.max(0, depth-leadingClose);
+    const out = `${"  ".repeat(depth + (/^(AND|OR|WHEN|ELSE)\b/i.test(text) ? 1 : 0))}${text}`;
+    depth = Math.max(0, depth + (bare.match(/\(/g)?.length||0) - (bare.match(/\)/g)?.length||0) + leadingClose);
+    return out;
+  }).join("\n");
+}
+/** POSIX-ish argv splitter (single/double quotes, backslash escapes) — just
+ *  enough to extract `mysql -e "SQL"` from bash tool calls. */
+function shSplit(s){
+  const out = []; let cur = "", quote = null;
+  for (let i=0; i<s.length; i++){
+    const c = s[i];
+    if (quote){ if (c === quote) quote = null; else cur += c; }
+    else if (c === "'" || c === '"') quote = c;
+    else if (c === "\\") cur += s[++i] ?? "";
+    else if (/\s/.test(c)){ if (cur){ out.push(cur); cur = ""; } }
+    else cur += c;
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+/** Extract the SQL from a `mysql -e "…"` / `mariadb --execute="…"` bash command.
+ *  Mirrors _sql_from_bash in harness/pi_stream.py so inline SQL matches what
+ *  the harness counted as db_queries. */
+function sqlFromBash(command){
+  const args = shSplit(String(command ?? ""));
+  for (let i=0; i<args.length; i++){
+    const bin = args[i].split("/").pop();
+    if (bin !== "mysql" && bin !== "mariadb") continue;
+    for (let j=i+1; j<args.length; j++){
+      if (args[j] === "-e") return args[j+1] ?? null;
+      if (args[j].startsWith("--execute=")) return args[j].slice(10);
+    }
+  }
+  return null;
+}
+/** One-line argument summary for non-SQL tools (returns HTML-safe text, or
+ *  null when the tool has no compact form — caller falls back to JSON). */
+function toolBrief(name, a){
+  const brief = (...xs) => {
+    const parts = xs.filter(x=>x!=null && x!=="").map(x=>String(x));
+    return parts.length ? parts.map(escapeHtml).join(" · ") : null;
+  };
+  switch (name){
+    case "read":  return brief(a.path, a.offset!=null?`offset ${a.offset}`:null, a.limit!=null?`limit ${a.limit}`:null);
+    case "grep":  return brief(a.pattern, a.path);
+    case "find":  return brief(a.pattern, a.path);
+    case "bash":  return brief(String(a.command ?? "").trim());
+    default:      return null;
+  }
+}
+/** Whether a tool call executed SQL (rendered inline by traceStep). */
+function callSql(call){
+  const a = call.arguments ?? {};
+  if (typeof a.sql === "string" && a.sql.trim()) return a.sql;
+  return call.name === "bash" ? sqlFromBash(a.command) : null;
+}
+/** One step of the agentic trace: a single tool call, with the SQL it
+ *  executed (if any) rendered inline beneath it. */
+function traceStep(index, call){
+  const a = call.arguments ?? {};
+  const name = String(call.name || "unknown");
+  const sql = callSql(call);
+  const head = call.source === "subagent" ? `<span class="srctag">subagent</span> ` : "";
+  const label = sql && name === "bash" ? "bash · mysql -e" : name;
+  let html = `<span style="color:var(--muted)">[${index+1}]</span> ${head}<b>${escapeHtml(label)}</b>`;
+  if (sql) html += `\n${escapeHtml(formatSql(sql))}`;
+  else {
+    const brief = toolBrief(name, a);
+    html += brief != null ? ` ${brief}` : `\n${escapeHtml(JSON.stringify(a, null, 2))}`;
+  }
+  const d = document.createElement("div"); d.className = "exec";
+  d.innerHTML = html;
+  return d;
+}
+/** Header row for a turn (or attempt divider) inside the agentic trace. */
+function turnHeader(title, sub, cls=""){
+  const d = document.createElement("div");
+  d.className = "turnhdr" + (cls ? " " + cls : "");
+  d.innerHTML = `<b>${title}</b>${sub ? ` <span class="cnt">${sub}</span>` : ""}`;
+  return d;
+}
+/** The per-arm trace timeline: calls grouped under attempt → turn headers.
+ *  Turn tags come from harness/pi_stream.py (1-based; subagent calls inherit
+ *  the spawning turn). Untagged calls (older runs) render as plain execution
+ *  order; turns inside the tagged range with no calls render as empty groups. */
+function turnTimeline(calls, totalTurns){
+  const root = document.createElement("div");
+  const byAttempt = new Map();
+  calls.forEach((call,index)=>{
+    const a = call.attempt || 1;
+    if (!byAttempt.has(a)) byAttempt.set(a, []);
+    byAttempt.get(a).push({call, index});
+  });
+  const attempts = [...byAttempt.keys()].sort((x,y)=>x-y);
+  const multi = attempts.length > 1;
+  attempts.forEach((attempt, ai)=>{
+    if (multi) root.appendChild(turnHeader(`attempt ${attempt}`, attempt>1 ? "harness retry" : "", "attempt"));
+    const items = byAttempt.get(attempt);
+    const tagged = items.filter(it=>it.call.turn > 0);
+    if (!tagged.length){
+      root.appendChild(turnHeader("execution order", "turn numbers not recorded in this run"));
+      items.forEach(it=>root.appendChild(traceStep(it.index, it.call)));
+      return;
+    }
+    const byTurn = new Map();
+    for (const it of tagged){
+      const t = it.call.turn;
+      if (!byTurn.has(t)) byTurn.set(t, []);
+      byTurn.get(t).push(it);
+    }
+    const maxTurn = Math.max(...byTurn.keys());
+    for (let t=1; t<=maxTurn; t++){
+      const its = byTurn.get(t) || [];
+      if (!its.length){ root.appendChild(turnHeader(`Turn ${t}`, "no tool calls")); continue; }
+      const nSql = its.filter(it=>callSql(it.call)).length;
+      root.appendChild(turnHeader(`Turn ${t}`, `${its.length} call${its.length>1?"s":""}${nSql ? ` · ${nSql} SQL` : ""}`));
+      its.forEach(it=>root.appendChild(traceStep(it.index, it.call)));
+    }
+    // mixed tagged/untagged shouldn't happen; keep any stragglers visible
+    items.filter(it=>!(it.call.turn > 0)).forEach(it=>root.appendChild(traceStep(it.index, it.call)));
+    // totalTurns belongs to the last attempt only
+    if (ai === attempts.length-1 && totalTurns > maxTurn){
+      const n = totalTurns - maxTurn;
+      root.appendChild(turnHeader(n === 1 ? `Turn ${totalTurns}` : `Turns ${maxTurn+1}–${totalTurns}`,
+        "no tool calls"));
+    }
+  });
+  return root;
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Detail panel
+// ───────────────────────────────────────────────────────────────────────────
+function openPanel(key){
+  let run = currentRun();
+  if (!run) return;
+  let id = key;
+  // combined drill-down rows pass "runName::questionId"
+  if (run === combinedRun){
+    const i = key.indexOf("::");
+    if (i > 0){
+      const src = RUNS.get(key.slice(0,i));
+      if (src){ run = src; id = key.slice(i+2); }
+    }
+  }
+  /** @type {Record<Arm,QRec>} */
+  const recs = {};
+  for (const arm of ARMS) recs[arm] = (run.arms[arm]||[]).find(r=>r.id===id) || null;
+  const anyRec = ARMS.map(arm=>recs[arm]).find(Boolean);
+  if (!anyRec) return;
+
+  document.getElementById("pTitle").innerHTML = `<code class="inl">${escapeHtml(id)}</code>`;
+  const tags = [];
+  if (anyRec.category !== undefined) tags.push(`category: <b>${escapeHtml(anyRec.category||"—")}</b>`);
+  if (anyRec.contains_domain_knowledge !== undefined) tags.push(`domain_knowledge: <b>${anyRec.contains_domain_knowledge===true?"true":anyRec.contains_domain_knowledge===false?"false":"—"}</b>`);
+  if (anyRec.difficulty !== undefined) tags.push(`difficulty: <b>${escapeHtml(anyRec.difficulty)}</b>`);
+  if (anyRec.db_id !== undefined) tags.push(`db: <b>${escapeHtml(anyRec.db_id)}</b>`);
+  document.getElementById("pSub").innerHTML = `${prettyName(run.name)}${tags.length ? " · " + tags.join(" · ") : ""}`;
+
+  const body = document.getElementById("panelBody");
+  body.innerHTML = "";
+
+  // per-arm mini summary
+  const mini = document.createElement("div"); mini.className="miniacc";
+  for (const arm of ARMS){
+    const r = recs[arm]; if(!r) continue;
+    const corr = r.correct===true?"✓ correct":r.correct===false?"✗ "+(recordErrors(r).join(", ").replaceAll("_", " ")||"wrong"):"—";
+    mini.innerHTML += `<div class="ac" style="border-color:var(--line)">
+      <div class="t"><span class="armbadge ${ARM_BADGE[arm]||""}">${ARM_LABEL[arm]}</span> · ${ARM_DESC[arm]}</div>
+      <div class="n" style="color:${r.correct===true?'var(--good)':r.correct===false?'var(--bad)':'var(--muted)'}">${corr}</div>
+      <div class="kt" style="margin-top:4px">
+        <span class="k">rows (answer / gold)</span><span class="v">${r.pred_rows??"—"} / ${r.gold_rows??"—"}</span>
+        <span class="k">columns (answer / gold)</span><span class="v">${r.pred_columns??"—"} / ${r.gold_columns??"—"}</span>
+        <span class="k">valid_sql</span><span class="v">${r.valid_sql===true?"yes":r.valid_sql===false?"no":"—"}</span>
+        <span class="k">turns</span><span class="v">${r.turns??"—"}</span>
+        <span class="k">db_queries</span><span class="v">${r.db_queries??"—"}</span>
+        <span class="k">tool_calls</span><span class="v">${r.tool_calls?.length??"—"}</span>
+        <span class="k">latency</span><span class="v">${fmtSec(r.latency_s)}</span>
+        <span class="k">tokens in</span><span class="v">${fmtInt(r.usage?.input)}</span>
+        <span class="k">tokens out</span><span class="v">${fmtInt(r.usage?.output)}</span>
+        <span class="k">cost</span><span class="v">${fmtUSD(r.cost?.total)}</span>
+      </div>
+    </div>`;
+  }
+  body.appendChild(mini);
+
+  // gold SQL
+  const gold = anyRec.gold_sql;
+  if (gold){
+    const blk = document.createElement("div"); blk.className="blk";
+    blk.innerHTML = `<h4>Gold SQL</h4><pre class="sql">${escapeHtml(formatSql(gold))}</pre>`;
+    body.appendChild(blk);
+  }
+
+  // pred SQL twocol per arm
+  const predBlk = document.createElement("div"); predBlk.className="blk";
+  predBlk.innerHTML = `<h4>Predicted SQL (per setup)</h4>`;
+  const cols = document.createElement("div"); cols.className="twocol";
+  for (const arm of ARMS){
+    const r = recs[arm]; if(!r) continue;
+    const cell = document.createElement("div");
+    cell.innerHTML = `<div style="font-size:12px;margin-bottom:4px"><span class="armbadge ${ARM_BADGE[arm]||""}">${ARM_LABEL[arm]}</span> · ${ARM_DESC[arm]} &nbsp;<span style="color:${r.correct===true?'var(--good)':r.correct===false?'var(--bad)':'var(--muted)'}">${r.correct===true?"✓":r.correct===false?"✗ "+recordErrors(r).join(", ").replaceAll("_", " "):"—"}</span></div>
+      <pre class="sql">${escapeHtml(r.pred_sql ? formatSql(r.pred_sql) : r.raw_text || "(none)")}</pre>`;
+    cols.appendChild(cell);
+  }
+  predBlk.appendChild(cols);
+  body.appendChild(predBlk);
+
+  // Agentic trace: what each agent did, grouped by turn, per setup.
+  // Replaces the former split “Executed SQL statements” / “Tool calls” views:
+  // every executed statement is rendered inline under the tool call that
+  // issued it (sql_exec, or bash `mysql -e` — same pairing as the parser in
+  // harness/pi_stream.py, which appends to executed_sqls and tool_calls in
+  // lockstep). Calls carry a `turn` tag since the parser recorded it; older
+  // runs fall back to plain execution order.
+  const haveTrace = ARMS.some(a=>recs[a]?.tool_calls?.length || recs[a]?.executed_sqls?.length);
+  if (haveTrace){
+    const trBlk = document.createElement("div"); trBlk.className="blk";
+    trBlk.innerHTML = `<h4>What the agents did (agentic trace)</h4>` +
+      `<p class="hint" style="margin:-4px 0 8px">Tool calls grouped by the agent turn that made them; each SQL statement is shown inline under the call that issued it. ` +
+      `Runs recorded before per-call turn tagging fall back to plain execution order. The answer returned on the final turn is the predicted SQL above.</p>`;
+    for (const arm of ARMS){
+      const r = recs[arm]; if (!r) continue;
+      const calls = r.tool_calls || [], ex = r.executed_sqls || [];
+      if (!calls.length && !ex.length) continue;
+      const bits = [`${r.turns ?? "—"} turns`, `${calls.length} tool calls`, `${r.db_queries ?? ex.length} SQL executed`];
+      const subN = calls.filter(c=>c.source==="subagent").length;
+      const attempts = [...new Set(calls.map(c=>c.attempt||1))].length;
+      if (subN) bits.push(`${subN} in subagent(s)`);
+      if (attempts>1) bits.push(`harness retried ×${attempts}`);
+      const wrap = document.createElement("details"); wrap.className="execs";
+      wrap.innerHTML = `<summary><span class="armbadge ${ARM_BADGE[arm]||""}" title="${ARM_LABEL[arm]}">${ARM_LABEL[arm]}</span> · ${bits.join(" · ")}</summary><div></div>`;
+      const list = wrap.lastElementChild;
+      if (calls.length) list.appendChild(turnTimeline(calls, r.turns));
+      else ex.forEach((s,i)=>{ // legacy record: statements without tool calls
+        const d = document.createElement("div"); d.className="exec";
+        d.innerHTML = `<span style="color:var(--muted)">[${i+1}]</span> ${escapeHtml(formatSql(s))}`;
+        list.appendChild(d);
+      });
+      trBlk.appendChild(wrap);
+    }
+    body.appendChild(trBlk);
+  }
+
+  document.getElementById("panel").classList.add("open");
+  document.getElementById("overlay").classList.add("open");
+}
+function closePanel(){
+  document.getElementById("panel").classList.remove("open");
+  document.getElementById("overlay").classList.remove("open");
+}
+window.closePanel = closePanel;
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closePanel(); });
+console.assert(formatSql("WITH q AS (SELECT 'FROM (x)' AS x FROM t WHERE a=1 AND b=2) SELECT * FROM q").includes("WITH q AS (\n  SELECT 'FROM (x)' AS x\n  FROM t\n  WHERE a=1\n    AND b=2)\nSELECT *\nFROM q"), "SQL display formatter");
+console.assert(shSplit("a 'b c' d").join("|") === "a|b c|d", "argv splitter");
+console.assert(sqlFromBash('mysql -h db -e "SELECT 1"') === "SELECT 1", "bash SQL extraction (-e)");
+console.assert(sqlFromBash("mariadb --execute='SELECT 2'") === "SELECT 2", "bash SQL extraction (--execute=)");
+console.assert(sqlFromBash("ls -la") === null, "bash SQL extraction (non-mysql)");
+
+// Dev-only hook: lets automated checks feed in data without the native file dialog.
+// Picks a run folder over HTTP and builds a FileList like the directory picker would.
+window.__loadRunOverHttp = async (/** @type {string} */ base, /** @type {string[]} */ runDirs) => {
+  const files = [];
+  for (const d of runDirs) {
+    const names = ["summary.json", ...ARMS.flatMap(a => [`arm${a}.jsonl`, `arm_${a}.jsonl`])];
+    for (const name of names) {
+      const path = `${base}/${d}/${name}`;
+      let res; try { res = await fetch(path); } catch(e){ continue; }
+      if (!res.ok) continue;
+      const text = await res.text();
+      const f = new File([text], name);
+      Object.defineProperty(f, "webkitRelativePath", { value: path });
+      files.push(f);
+    }
+  }
+  const dt = new DataTransfer();
+  for (const f of files) dt.items.add(f);
+  window.dispatchEvent(new CustomEvent("zviz:files", { detail: { files: dt.files } }));
+  return files.length;
+};
+// Wire a hidden dev button so automated checks can trigger the load via a real click
+// (the IAB blocks side-effecting evaluate, so we drive it through the click pipeline).
+document.getElementById("devLoadPilot").addEventListener("click", async () => {
+  // Convenience when serving the repo over HTTP (e.g. `python -m http.server`):
+  // auto-discover run dirs under ./results and load them. No-op if the fetch fails.
+  try {
+    const res = await fetch("results/");
+    const idx = await res.text();
+    const runs = [...idx.matchAll(/href="([^"]+?)\/"/g)].map(m => m[1].replace(/\/$/, ""))
+      .filter(n => /^[A-Za-z0-9_]+$/.test(n));
+    if (runs.length) await window.__loadRunOverHttp("results", runs);
+  } catch (e) { console.warn("reload runs failed:", e); }
+});
+
+</script>
+</body>
+</html>

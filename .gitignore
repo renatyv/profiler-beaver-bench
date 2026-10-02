@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+beaver-db/
+beaver-query/
+
+# experiment outputs (keep code & manifests; ignore bulky per-question logs)
+results/
+.env
+runs/
+.zcode/
+*.tar.gz
+.DS_Store

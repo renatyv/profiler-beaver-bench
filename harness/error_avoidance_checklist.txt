@@ -1,0 +1,65 @@
+ERROR-AVOIDANCE CHECKLIST — common text-to-SQL failure modes to watch for:
+
+1. Column selection:
+    a. select all requested columns;
+    b. do not select any extra columns which were not explicitly requested —
+       an answer with extra columns is WRONG even when the values are right;
+    c. verify names and meaning against the request;
+    d. when a question pairs "how many" with a listing, return only the listed
+       attributes via SELECT DISTINCT — don't add computed count columns; prefer
+       DISTINCT over GROUP BY when no aggregate survives in the projection
+    e. a metric used only to rank or order rows ("top 3 by shortest average
+       duration") belongs in ORDER BY, not in the SELECT list;
+    f. superlatives ("the most common X", "the Y with the highest Z") return
+       the entity itself, never the count or metric value;
+    g. when the question says "rank", include the rank/position column; when
+       evidence maps a name to first/last parts, return those as separate
+       columns — never concatenate them into one.
+
+2. Table selection: confirm the correct table(s) and their granularity;
+   don't pick a table just because a column name matches. When several tables
+   expose same-named columns, choose the one owned by the entity the question
+   asks about and disambiguate with a probe query if unsure.
+
+3. Joins: choose INNER vs LEFT JOIN from whether unmatched rows belong in
+   the answer (LEFT keeps them; INNER drops them), not from wording or
+   parentheses. Verify join conditions against the actual foreign-key
+   relationships. Every joined table must contribute a requested column or
+   a required predicate — a join that contributes neither only multiplies
+   rows.
+
+4. Filters: translate every condition from the question into a predicate and
+   do not silently drop any. Copy literal values (strings, dates, IDs,
+   categories) exactly from the question or database. Do not invent business
+   filters such as soft-delete or latest-row predicates, and do not add
+   NULL/zero hygiene guards (IS NOT NULL, > 0) unless the question requires
+   them — division by zero yields NULL, not an error. If a filter yields
+   zero rows or a COUNT of 0, re-check each literal against the database
+   (SELECT DISTINCT the column) before accepting the result.
+
+5. Grouping & ordering: include GROUP BY wherever results are aggregated and
+   make sure the grouping keys match the SELECTed non-aggregate columns; add
+   ORDER BY whenever a specific row order is requested. Put aggregate-level
+   filters in HAVING, never in WHERE.
+
+6. Aggregates & functions: pick the right aggregate for the question
+   (COUNT != SUM != AVG). COUNT(condition) counts rows where the condition
+   is non-NULL, not rows where it holds — count matches with SUM(CASE WHEN
+   … THEN 1 ELSE 0 END) or a WHERE filter. Never add DISTINCT inside COUNT
+   unless the question says distinct. When the question or its evidence
+   supplies a formula (derived metric, age, ratio), reproduce it exactly —
+   same operands, order, and precision, with no extra corrections or
+   refinements. For window functions, double-check PARTITION BY, ORDER BY,
+   and the ROWS/RANGE frame. Keep required math/conversion steps; do not
+   add redundant CASTs.
+
+7. Subtotals/rollups: when the question asks for subtotals or a grand total,
+   use the correct construct (ROLLUP / CUBE / GROUPING SETS) instead of
+   omitting it.
+
+8. Measure grain: match the grain requested for each AVG/COUNT/SUM. Deduplicate
+   or pre-aggregate only when a one-to-many join would otherwise multiply that
+   measure; do not apply either as generic hygiene. Add DISTINCT for requested
+   unique result rows and LIMIT/TOP only for a requested bound. Follow any
+   dataset-specific aggregate-of-aggregates convention only when supplied as
+   evidence or metadata, never as a global SQL rule.

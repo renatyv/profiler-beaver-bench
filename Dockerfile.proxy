@@ -1,0 +1,13 @@
+# Egress allow-list proxy sidecar.
+#
+# A ~minimal Node image running harness/egress/egress-proxy.js. The proxy is
+# attached to beaver-net and has unrestricted outbound (so it can reach
+# openrouter.ai), but it only forwards CONNECT requests whose host is on the
+# EGRESS_ALLOW list. Agent containers point HTTPS_PROXY at it.
+FROM node:24-bookworm-slim
+WORKDIR /proxy
+COPY egress-proxy.js .
+ENV PROXY_PORT=8888
+ENV EGRESS_ALLOW="openrouter.ai"
+EXPOSE 8888
+CMD ["node", "egress-proxy.js"]

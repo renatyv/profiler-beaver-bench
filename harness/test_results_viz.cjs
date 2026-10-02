@@ -1,0 +1,11 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const html = fs.readFileSync(path.join(__dirname, '../results-viz.html'), 'utf8');
+const source = html.slice(html.indexOf('function recordErrors('), html.indexOf('function renderDrill('));
+const recordErrors = new Function(source + '; return recordErrors;')();
+assert.deepEqual(recordErrors({error_class:'wrong_cardinality',gold_rows:5,pred_rows:2,gold_columns:3,pred_columns:4}), ['wrong_cardinality','wrong_column_count']);
+assert.deepEqual(recordErrors({error_class:'empty_result',gold_rows:5,pred_rows:0,gold_columns:3,pred_columns:4}), ['empty_result','wrong_cardinality','wrong_column_count']);
+assert.deepEqual(recordErrors({error_class:'correct',gold_rows:5,pred_rows:5,gold_columns:3,pred_columns:3}), ['correct']);
+assert.deepEqual(recordErrors(undefined), []);
+console.log('Viewer multi-error checks passed');

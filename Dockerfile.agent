@@ -1,0 +1,48 @@
+# Agent sandbox image for the BEAVER profiling experiment.
+#
+# Based on pi's own Dockerfile.pi template
+# (node_modules/@earendil-works/pi-coding-agent/docs/containerization.md),
+# extended with the data-analytics tooling the agent should have at its
+# disposal: python + pandas/pyarrow, jq, ripgrep, mysql client.
+#
+# Build once (offline thereafter):
+#   docker build -t beaver-agent -f Dockerfile.agent .
+#
+# Pi runs SQL through the mounted sql_exec extension; the other supported agents
+# use the MySQL CLI. The SELECT-only database account is the safety boundary.
+# The image intentionally bundles no repo code or credentials.
+
+FROM node:24-bookworm-slim
+
+# Core shell + data tooling. default-mysql-client gives the `mysql` CLI.
+# python3-pip + --break-system-packages (Debian 12 PEP 668) for pandas/pyarrow.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+       bash \
+       ca-certificates \
+       curl \
+       git \
+       jq \
+       ripgrep \
+       default-mysql-client \
+       python3 \
+       python3-pip \
+       python3-venv \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
+      pandas \
+      pyarrow
+
+# Coding agents plus the TypeScript compiler (the agent can run `tsc`, then
+# `node`). They all use the same isolated container and OpenRouter-only proxy.
+RUN npm install -g @anthropic-ai/claude-code @openai/codex @earendil-works/pi-coding-agent@0.84.1 opencode-ai typescript
+
+# Run unprivileged. The runner bind-mounts only runner-owned tools/configuration,
+# all read-only.
+RUN mkdir -p /config /tmp/opencode-config /workspace /home/node/.codex /home/node/.pi/agent \
+  && chown -R node:node /tmp/opencode-config /workspace /home/node/.codex /home/node/.pi
+WORKDIR /workspace
+USER node
+
+ENTRYPOINT ["pi"]

@@ -1,0 +1,122 @@
+[
+  {
+    "database": "nova",
+    "check": "extra_uuid_multiplicity",
+    "sql": "SELECT COUNT(*) AS duplicate_keys, MAX(n) AS max_rows_per_key FROM (SELECT INSTANCE_UUID,COUNT(*) n FROM INSTANCE_EXTRA GROUP BY INSTANCE_UUID HAVING COUNT(*)>1) t",
+    "ok": true,
+    "rows": [
+      [
+        27,
+        2
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "nova",
+    "check": "cache_uuid_multiplicity",
+    "sql": "SELECT COUNT(*) AS duplicate_keys, MAX(n) AS max_rows_per_key FROM (SELECT INSTANCE_UUID,COUNT(*) n FROM INSTANCE_INFO_CACHES GROUP BY INSTANCE_UUID HAVING COUNT(*)>1) t",
+    "ok": true,
+    "rows": [
+      [
+        0,
+        null
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "nova",
+    "check": "image_type_metadata_multiplicity",
+    "sql": "SELECT COUNT(*) AS duplicate_keys, MAX(n) AS max_rows_per_key FROM (SELECT INSTANCE_UUID,COUNT(*) n FROM INSTANCE_SYSTEM_METADATA WHERE `KEY`='image_image_type' GROUP BY INSTANCE_UUID HAVING COUNT(*)>1) t",
+    "ok": true,
+    "rows": [
+      [
+        0,
+        null
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "dw",
+    "check": "floor_key_multiplicity",
+    "sql": "SELECT COUNT(*) AS duplicate_keys, MAX(n) AS max_rows_per_key FROM (SELECT FLOOR_KEY,COUNT(*) n FROM SPACE_FLOOR GROUP BY FLOOR_KEY HAVING COUNT(*)>1) t",
+    "ok": true,
+    "rows": [
+      [
+        0,
+        null
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "dw",
+    "check": "hr_dlc_multiplicity",
+    "sql": "SELECT COUNT(*) AS duplicate_keys, MAX(n) AS max_rows_per_key FROM (SELECT DLC_KEY,COUNT(*) n FROM HR_ORG_UNIT GROUP BY DLC_KEY HAVING COUNT(*)>1) t",
+    "ok": true,
+    "rows": [
+      [
+        62,
+        133
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "neutron",
+    "check": "security_binding_multiplicity",
+    "sql": "SELECT COUNT(*) AS duplicate_keys, MAX(n) AS max_rows_per_key FROM (SELECT PORT_ID,COUNT(*) n FROM SECURITYGROUPPORTBINDINGS GROUP BY PORT_ID HAVING COUNT(*)>1) t",
+    "ok": true,
+    "rows": [
+      [
+        1221,
+        11
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "neutron",
+    "check": "port_security_multiplicity",
+    "sql": "SELECT COUNT(*) AS duplicate_keys, MAX(n) AS max_rows_per_key FROM (SELECT PORT_ID,COUNT(*) n FROM PORTSECURITYBINDINGS GROUP BY PORT_ID HAVING COUNT(*)>1) t",
+    "ok": true,
+    "rows": [
+      [
+        0,
+        null
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "neutron",
+    "check": "floatingip_shared_standard_attribute_count",
+    "sql": "SELECT COUNT(*) FROM FLOATINGIPS f JOIN NETWORKS n ON f.STANDARD_ATTR_ID=n.STANDARD_ATTR_ID",
+    "ok": true,
+    "rows": [
+      [
+        0
+      ]
+    ],
+    "error": null
+  },
+  {
+    "database": "nova",
+    "check": "stddev_variance_alias_check",
+    "sql": "SELECT STDDEV(v),STDDEV_POP(v),STDDEV_SAMP(v),VARIANCE(v),VAR_POP(v),VAR_SAMP(v) FROM (SELECT 1 v UNION ALL SELECT 3) t",
+    "ok": true,
+    "rows": [
+      [
+        1.0,
+        1.0,
+        1.4142135623730951,
+        1.0,
+        1.0,
+        2.0
+      ]
+    ],
+    "error": null
+  }
+]
